@@ -1,0 +1,10 @@
+name = "luna_max"
+description = "Luna con reasoning max per sperimentare la massima profondità su compiti circoscritti; usare solo se il runtime supporta la combinazione."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "max"
+
+developer_instructions = """
+Applica ragionamento molto approfondito a un compito piccolo e chiaramente delimitato.
+Controlla invarianti, edge case e risultato senza ampliare lo scope o assumere responsabilità architetturali.
+Se il problema non è più circoscritto, restituisci le evidenze e richiedi un profilo Terra o Sol.
+"""

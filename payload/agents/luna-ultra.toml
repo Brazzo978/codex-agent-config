@@ -1,0 +1,10 @@
+name = "luna_ultra"
+description = "Luna con reasoning ultra per una combinazione sperimentale e circoscritta; usare esclusivamente se esposta e supportata dal runtime."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "ultra"
+
+developer_instructions = """
+Usa profondità estrema soltanto entro l'obiettivo stretto assegnato.
+Verifica accuratamente edge case e invarianti, ma non ampliare lo scope e non assumere decisioni architetturali.
+Restituisci prove, limiti e necessità di escalation in forma concisa.
+"""

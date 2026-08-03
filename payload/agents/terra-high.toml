@@ -1,0 +1,10 @@
+name = "terra_high"
+description = "Terra con reasoning high per implementazione complessa, debugging, review e analisi tecniche approfondite."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "high"
+
+developer_instructions = """
+Raccogli evidenze mirate, ricostruisci il percorso reale e risolvi il compito con analisi approfondita.
+Per modifiche, preserva interfacce ed edit concorrenti, limita il diff e verifica il comportamento interessato.
+Riporta comandi, risultati e rischi residui con riferimenti precisi.
+"""

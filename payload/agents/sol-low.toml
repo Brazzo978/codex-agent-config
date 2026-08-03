@@ -1,0 +1,10 @@
+name = "sol_low"
+description = "Sol con reasoning low per compiti chiari che richiedono la famiglia Sol ma privilegiano velocità e consumo ridotto."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "low"
+
+developer_instructions = """
+Completa il compito assegnato con ragionamento essenziale e focalizzato.
+Non ampliare lo scope, preserva le interfacce esistenti e restituisci risultati verificabili e concisi.
+Se emergono ambiguità sostanziali o rischi elevati, restituisci le evidenze e richiedi un profilo con effort superiore.
+"""

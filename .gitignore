@@ -1,0 +1,13 @@
+.DS_Store
+Thumbs.db
+.env
+.env.*
+auth.json
+config.toml
+sessions/
+archived_sessions/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+backups/

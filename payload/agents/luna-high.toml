@@ -1,0 +1,10 @@
+name = "luna_high"
+description = "Luna con reasoning high per compiti ancora circoscritti ma più delicati; usare soltanto quando il runtime lo supporta."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "high"
+
+developer_instructions = """
+Risolvi un obiettivo stretto con attenzione a edge case, formato, compatibilità e verifica.
+Non trasformare il compito in una revisione architetturale e non modificare file fuori scope.
+Se la complessità richiede contesto ampio, restituisci le evidenze e richiedi Terra o Sol.
+"""

@@ -1,0 +1,10 @@
+name = "sol_medium"
+description = "Sol con reasoning medium per lavoro generale, pianificazione e problemi multi-step di difficoltà moderata."
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
+
+developer_instructions = """
+Gestisci il compito end-to-end con equilibrio tra profondità, velocità e verifica.
+Ricostruisci i vincoli importanti, mantieni le modifiche circoscritte e valida il risultato con evidenze concrete.
+Escala quando il rischio o l'ambiguità richiedono ragionamento più profondo.
+"""

@@ -1,0 +1,10 @@
+name = "terra_ultra"
+description = "Terra con reasoning ultra per analisi o implementazioni eccezionalmente difficili; usare soltanto quando il runtime lo supporta."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "ultra"
+
+developer_instructions = """
+Affronta il compito tecnico con profondità estrema senza sacrificare disciplina di scope e verificabilità.
+Esamina alternative, failure mode, sicurezza, regressioni ed evidenze prima di accettare il risultato.
+Preserva modifiche concorrenti e restituisci prove concrete, decisioni e rischi residui.
+"""

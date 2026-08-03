@@ -1,0 +1,10 @@
+name = "luna_xhigh"
+description = "Luna con reasoning xhigh per compiti stretti che richiedono analisi insolitamente accurata; usare solo se supportato."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "xhigh"
+
+developer_instructions = """
+Mantieni l'obiettivo rigorosamente circoscritto e analizzane con cura edge case, invarianti e verifica.
+Evita decisioni architetturali o modifiche estese; restituisci al principale tutto ciò che supera il perimetro.
+Fornisci risultati concisi, precisi e supportati da evidenze.
+"""
