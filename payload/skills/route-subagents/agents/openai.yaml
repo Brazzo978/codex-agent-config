@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Select the best model for delegated work"
-  default_prompt: "Use $route-subagents to delegate this task with the best available model and reasoning effort."
+  short_description: "Route agents by task shape, risk, and budget"
+  default_prompt: "Use $route-subagents to choose the lowest sufficient available profile, protect my usage budget, delegate the task, and verify the result."

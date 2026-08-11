@@ -1,5 +1,5 @@
 name = "sol_max"
-description = "Agente ad alta capacità per problemi complessi, ambigui e multi-step che richiedono pianificazione, implementazione e verifica approfondita."
+description = "Massima profondità Sol per un unico problema indivisibile, decisione critica o verifica finale eccezionalmente difficile. Quota elevata: usare solo su richiesta/conferma quando la qualità vale più di latenza e consumo."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "max"
 

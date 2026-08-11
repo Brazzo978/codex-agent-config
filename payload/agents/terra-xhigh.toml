@@ -1,5 +1,5 @@
 name = "terra_xhigh"
-description = "Terra con reasoning xhigh per lavoro tecnico molto difficile che beneficia ancora di velocità ed efficienza."
+description = "Terra profondo per esecuzione tecnica difficile: bug sottili, integrazioni complesse, implementazione security-sensitive o molte evidenze dentro un'architettura già decisa."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "xhigh"
 

@@ -3,7 +3,7 @@
 Private, portable configuration for the Codex desktop app and CLI. It installs:
 
 - 19 custom-agent profiles: GPT-5.6 Sol, Terra, and Luna across six effort levels, plus GPT-5.3 Codex Spark / Medium;
-- the `route-subagents` personal skill and its routing catalog;
+- the `route-subagents` personal skill with task-fit, cost-performance, quota, escalation, and fallback rules;
 - a managed routing block in the user's global `AGENTS.md`.
 
 The installer never copies `auth.json`, sessions, databases, logs, MCP secrets, or the machine-specific `config.toml`.
@@ -54,6 +54,8 @@ Restart the Codex desktop app and start a new task after installation or update.
 - `-Check` or `--check` is read-only and exits nonzero if the installed bundle is missing or differs.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
+
+The router prefers GPT-5.3 Codex Spark for eligible self-contained microtasks because Spark has a separate usage limit. For GPT-5.6 work it applies task fit first, then uses a dated Artificial Analysis Intelligence Index/cost snapshot as a Pareto prior. It chooses the cheapest suitable profile, defaults to conservative effort levels, and requires confirmation before automatically using Max or Ultra.
 
 ## Ask Codex to install it
 

@@ -1,10 +1,10 @@
 name = "luna_ultra"
-description = "Luna con reasoning ultra per una combinazione sperimentale e circoscritta; usare esclusivamente se esposta e supportata dal runtime."
+description = "Corsia Luna parallela per pochi sottocompiti indipendenti, ripetibili e con identici criteri di accettazione. Quota elevata: solo su richiesta/conferma e se supportato; non è un Max più forte."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "ultra"
 
 developer_instructions = """
-Usa profondità estrema soltanto entro l'obiettivo stretto assegnato.
-Verifica accuratamente edge case e invarianti, ma non ampliare lo scope e non assumere decisioni architetturali.
-Restituisci prove, limiti e necessità di escalation in forma concisa.
+Scomponi soltanto un carico stretto e ripetibile in pochi sottocompiti realmente indipendenti.
+Mantieni identici formato e criteri di accettazione, evita duplicazioni e non assumere decisioni architetturali.
+Consolida risultati, prove, limiti e necessità di escalation in forma concisa.
 """

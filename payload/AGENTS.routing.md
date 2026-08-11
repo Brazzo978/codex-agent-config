@@ -1,15 +1,22 @@
 # Dynamic subagent routing
 
-Use the `route-subagents` skill for every subagent routing decision, whether delegation is requested explicitly or becomes materially useful during the task.
+Use the `route-subagents` skill for every explicit agent/model/effort request and whenever delegation materially improves speed, quality, context isolation, independent verification, or long-task reliability.
 
-When delegation would materially improve speed, quality, context isolation, or independent verification, select the narrowest sufficient custom-agent profile from the installed `<model>_<effort>` matrix.
+Choose the model family from the task shape, then use the lowest sufficient effort:
 
-- Prefer `spark_medium` for near-instant, very small coding answers, tiny edits, narrow lookups, and mechanically specified tasks with little required context.
-- Prefer `luna_low` or `luna_medium` for small, repetitive, high-volume, or mechanically specified work.
-- Prefer `terra_low` or `terra_medium` for fast exploration, routine implementation, and supporting work.
-- Prefer `terra_high`, `terra_xhigh`, or `terra_max` for progressively harder implementation, debugging, review, and evidence-heavy analysis where speed still matters.
-- Prefer `sol_medium` or `sol_high` for ambiguous multi-step work, architecture, planning, and consequential review.
-- Reserve `sol_xhigh`, `sol_max`, and `sol_ultra` for genuinely difficult reasoning, high-risk decisions, or final independent verification.
-- Use `luna_high`, `luna_xhigh`, `luna_max`, `luna_ultra`, `terra_ultra`, or any other uncommon combination only when the runtime explicitly exposes and supports it and the task benefits from that exact tradeoff.
+- `spark_medium`: preferred first for eligible near-instant microtasks with little context—one-line commands, syntax lookup, tiny obvious fixes, or short code explanations—because Spark uses a separate allowance from GPT-5.6.
+- Luna: clear, repeatable, high-volume work with explicit inputs, output format, and acceptance criteria.
+- Terra: default everyday lane for repository exploration, implementation, tests, debugging, review, and evidence gathering when the objective is mostly settled.
+- Sol: ambiguous, open-ended, high-value work requiring architecture, difficult judgment, cross-system reasoning, polish, or critical independent review.
 
-Do not silently substitute another model, effort, or agent type when an explicitly selected profile is unavailable. Report the unavailable route and choose a fallback only when the user authorizes it. Keep each delegated task bounded, preserve concurrent edits, verify returned claims in the primary session, and summarize the evidence rather than raw subagent output.
+Use `low` for direct low-risk work, `medium` as the balanced default, `high` for multi-step work with meaningful edge cases, and `xhigh` for subtle broad-context or higher-risk reasoning. Use `max` for one exceptionally hard indivisible problem. Use `ultra` only for genuinely independent subproblems that benefit from parallel agents; Ultra is not simply a stronger Max.
+
+Treat usage as finite. Every subagent consumes its own model and tool work, and higher reasoning, larger context, retries, and parallel lanes use the allowance faster. Prefer `medium`, require concrete reasons for `high` or `xhigh`, and never auto-spawn `max` or `ultra` unless the user explicitly requested it. If Max or Ultra appears necessary, explain why and obtain confirmation first. For Ultra, use only the minimum useful independent lanes—normally two or three—and never create redundant agents merely to collect extra opinions.
+
+Compare cost and capability across families, not effort labels alone. A higher-effort Luna can be the best value for a hard but still deterministic and narrow task; it cannot replace Terra for broad repository/tool execution. A higher-effort Terra can be better value than Sol when architecture is settled; it cannot replace Sol when ambiguity and judgment are the core problem. Exclude poorly fitting families before optimizing cost.
+
+Use the dated Artificial Analysis Intelligence Index versus cost snapshot in the `route-subagents` catalog as an empirical prior after the task-fit gate. When fit is comparable, prefer a Pareto-efficient profile that meets the required capability. Luna and Sol currently lead Terra on generic intelligence per dollar, so Terra must be justified by its repository execution, tool use, latency, or debugging fit. Benchmark API cost does not override the Max/Ultra allowance gate.
+
+Prefer Spark whenever it is exposed and the task is genuinely self-contained and tiny, including suitable microtasks inside a larger workflow. Do not fragment work merely to use Spark, and do not retry unsuitable work there. If Spark was selected implicitly but is unavailable or its separate limit is exhausted, choose the next suitable GPT-5.6 profile and disclose the fallback; if Spark was explicitly requested, stop instead.
+
+Honor an explicitly named profile exactly. If it is not exposed by the runtime, report that and stop; never silently substitute. Keep delegated assignments bounded, avoid overlapping file ownership, preserve concurrent edits, verify material claims in the primary session, and summarize evidence rather than raw subagent output.

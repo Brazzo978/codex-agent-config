@@ -1,5 +1,5 @@
 name = "luna_xhigh"
-description = "Luna con reasoning xhigh per compiti stretti che richiedono analisi insolitamente accurata; usare solo se supportato."
+description = "Corsia Luna non comune per un problema deterministico e circoscritto i cui edge case richiedono controllo insolitamente profondo. Solo se esposto; non per architettura o investigazione aperta."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "xhigh"
 

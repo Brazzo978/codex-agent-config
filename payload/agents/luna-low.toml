@@ -1,5 +1,5 @@
 name = "luna_low"
-description = "Luna con reasoning low per operazioni minime, ripetitive, meccaniche e ad alto volume."
+description = "Corsia GPT-5.6 più economica per estrazione, classificazione, formattazione, batching o edit ovvi con criteri espliciti. Evitare ambiguità, contesto ampio e debugging multi-step."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "low"
 

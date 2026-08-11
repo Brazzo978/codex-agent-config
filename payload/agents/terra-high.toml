@@ -1,5 +1,5 @@
 name = "terra_high"
-description = "Terra con reasoning high per implementazione complessa, debugging, review e analisi tecniche approfondite."
+description = "Worker forte per modifiche multi-file, debugging non banale, review ed edge case con verifica significativa, quando servono velocità e tool use più del massimo giudizio/polish di Sol."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "high"
 

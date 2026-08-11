@@ -1,5 +1,5 @@
 name = "luna_medium"
-description = "Agente leggero per compiti piccoli, ripetitivi, ad alto volume o con istruzioni molto precise."
+description = "Corsia rapida per compiti chiari e ripetibili che richiedono alcuni controlli: trasformazioni strutturate, sintesi concise, batch ed edit strettamente specificati. Evitare architettura e indagini aperte."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 

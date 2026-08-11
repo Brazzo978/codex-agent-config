@@ -1,5 +1,5 @@
 name = "sol_high"
-description = "Sol con reasoning high per architettura, debugging complesso, decisioni importanti e review approfondite."
+description = "Sol profondo per architettura, debugging complesso, ricerca di valore, review consequenziale o lavoro ambiguo con tradeoff multipli e forte necessità di verifica e polish."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 
