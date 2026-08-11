@@ -55,7 +55,7 @@ Restart the Codex desktop app and start a new task after installation or update.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
 
-The router prefers GPT-5.3 Codex Spark for eligible self-contained microtasks because Spark has a separate usage limit. For GPT-5.6 work it applies task fit first, then uses a dated Artificial Analysis Intelligence Index/cost snapshot as a Pareto prior. It chooses the cheapest suitable profile, defaults to conservative effort levels, and requires confirmation before automatically using Max or Ultra.
+The router preserves the canonical capability hierarchy `Sol > Terra > Luna > Spark`, with expected speed and cost efficiency generally running in the inverse direction. It prefers Spark for eligible self-contained microtasks because Spark has a separate usage limit. The dated Artificial Analysis Intelligence Index/cost snapshot is only a secondary efficiency signal after family capability and task fit; it cannot justify down-tiering. Max and Ultra require confirmation before automatic use.
 
 ## Ask Codex to install it
 

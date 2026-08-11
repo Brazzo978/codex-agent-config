@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
   short_description: "Route agents by task shape, risk, and budget"
-  default_prompt: "Use $route-subagents to choose the lowest sufficient available profile, protect my usage budget, delegate the task, and verify the result."
+  default_prompt: "Use $route-subagents to preserve the Sol > Terra > Luna > Spark capability hierarchy, choose the lowest sufficient profile, protect my usage budget, delegate the task, and verify the result."

@@ -2,6 +2,8 @@
 
 Use these examples only when the decision tree leaves a real ambiguity. An explicit user-selected profile always wins.
 
+Preserve the capability order `Sol > Terra > Luna > Spark`; speed and cost efficiency generally run `Spark > Luna > Terra > Sol`. A higher effort in a lower family is not an automatic substitute for the family above.
+
 | Request shape | Suggested route | Why |
 |---|---|---|
 | Return one shell command or explain a short pasted error | `spark_medium` | Tiny, local, latency-sensitive, little context |
