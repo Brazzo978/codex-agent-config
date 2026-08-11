@@ -2,7 +2,7 @@
 
 Use these examples only when the decision tree leaves a real ambiguity. An explicit user-selected profile always wins.
 
-Preserve the capability order `Sol > Terra > Luna > Spark`; speed and cost efficiency generally run `Spark > Luna > Terra > Sol`. A higher effort in a lower family is not an automatic substitute for the family above.
+At equal effort the observed intelligence order is `Sol > Terra > Luna`; across different efforts use the dated profile ladder. Keep workload fit as the gate: a higher score does not grant another family's tool-use or ambiguity-handling role.
 
 | Request shape | Suggested route | Why |
 |---|---|---|
@@ -11,13 +11,13 @@ Preserve the capability order `Sol > Terra > Luna > Spark`; speed and cost effic
 | Apply the same explicit transformation to many independent records | `luna_low` | Deterministic, repeatable, high-volume |
 | Produce structured summaries from supplied documents with a fixed schema | `luna_medium` | Clear output with several checks |
 | Perform a narrow task with known edge cases and stronger verification | `luna_high` | Still well specified, but requires careful checking |
-| Solve a very hard, indivisible, deterministic transformation where Luna still fits | `luna_xhigh`; consider `luna_max` only if XHigh is insufficient and with confirmation | Luna has a lower family token rate, but no published effort multiplier proves Max cheaper than Terra High |
+| Solve a very hard, indivisible, deterministic transformation where Luna still fits | `luna_xhigh` (50, $95 AA cost); consider `luna_max` (52, $172) only if XHigh is insufficient and with confirmation | Select the cheapest Luna profile that reaches the required intelligence floor; Max remains quota-heavy |
 | Map a repository area and return entry points and evidence | `terra_low` or `terra_medium` | Read-heavy exploration and tool use |
-| Implement a routine feature from settled requirements | `terra_medium` | Everyday execution with a clear objective |
-| Debug a multi-file regression and add tests | `terra_high` | Non-trivial tool work, edge cases, and verification |
-| Compare `luna_max` with `terra_high` for a multi-file regression | `terra_high` | Luna is cheaper but fails the repository/debugging fit gate; retries would be false economy |
+| Implement a routine feature from settled requirements | `terra_medium` (47, $192 AA cost) | Everyday execution with a clear objective; it ties the cheaper `luna_high` on intelligence but has stronger repository fit |
+| Debug a multi-file regression and add tests | `terra_high` (50, $395) | It ties the cheaper `luna_xhigh` on intelligence but has the correct tool/debugging fit |
+| Compare `luna_max` (52, $172) with `terra_high` (50, $395) for a multi-file regression | `terra_high` | Luna is cheaper and scores higher but fails the repository/debugging fit gate; retries would be false economy |
 | Implement a security-sensitive change inside a settled design | `terra_xhigh` | Difficult execution and higher risk, but architecture is fixed |
-| Choose an architecture or migration strategy with tradeoffs | `sol_high` | Ambiguity and consequential judgment dominate |
+| Choose an architecture or migration strategy with tradeoffs | `sol_high` (57, $955 AA cost) | Ambiguity and consequential judgment dominate; `terra_max` ties the score, costs more at $1,390, and lacks the natural workload fit |
 | Analyze a broad cross-system failure with unclear ownership | `sol_xhigh` | Large context, subtle assumptions, deep reasoning |
 | Solve one exceptionally hard algorithmic or verification problem | `sol_max` | Single indivisible problem where depth dominates latency |
 | Review a high-impact completed change independently | Fresh `sol_high` or `sol_xhigh` | Judgment and context separation matter |

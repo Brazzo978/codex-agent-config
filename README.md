@@ -55,7 +55,7 @@ Restart the Codex desktop app and start a new task after installation or update.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
 
-The router preserves the canonical capability hierarchy `Sol > Terra > Luna > Spark`, with expected speed and cost efficiency generally running in the inverse direction. It prefers Spark for eligible self-contained microtasks because Spark has a separate usage limit. The dated Artificial Analysis Intelligence Index/cost snapshot is only a secondary efficiency signal after family capability and task fit; it cannot justify down-tiering. Max and Ultra require confirmation before automatic use.
+The router applies official workload fit first, then a dated Artificial Analysis Intelligence Index and full-suite API-cost table for each concrete model-plus-effort profile. It treats intelligence as a minimum capability threshold and chooses the cheapest natural-fit profile that reaches it; it does not use a naive intelligence/cost ratio. Spark remains the fastest self-contained microtask lane with separate usage and is not scored by that benchmark. Max and Ultra require confirmation before automatic use.
 
 ## Ask Codex to install it
 
