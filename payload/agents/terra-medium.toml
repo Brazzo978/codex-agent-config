@@ -1,5 +1,5 @@
 name = "terra_medium"
-description = "Worker quotidiano predefinito per implementazione ordinaria, test, esplorazione repository, uso tool e debugging circoscritto con requisiti e risultato atteso abbastanza chiari."
+description = "Terra medium: implementazione/test/esplorazione ordinaria, scope chiaro e circoscritto."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 

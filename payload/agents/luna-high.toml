@@ -1,5 +1,5 @@
 name = "luna_high"
-description = "Luna accurato per un compito stretto e ben specificato con edge case o verifica forte. Passare a Terra se crescono repository/tool, a Sol se ambiguità e giudizio diventano centrali."
+description = "Luna high: task stretto con edge case/verifica; no contesto repository ampio o giudizio aperto."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "high"
 

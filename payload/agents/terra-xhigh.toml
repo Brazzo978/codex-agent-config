@@ -1,5 +1,5 @@
 name = "terra_xhigh"
-description = "Terra profondo per esecuzione tecnica difficile: bug sottili, integrazioni complesse, implementazione security-sensitive o molte evidenze dentro un'architettura già decisa."
+description = "Terra xhigh: esecuzione sottile/high-risk con architettura già decisa."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "xhigh"
 

@@ -1,5 +1,5 @@
 name = "sol_xhigh"
-description = "Sol molto profondo per problemi ad ampio contesto, alto rischio o forte ambiguità con assunzioni sottili, sicurezza, compatibilità o ragionamento cross-system difficile."
+description = "Sol xhigh: contesto ampio, alto rischio, forte ambiguità, ragionamento cross-system."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "xhigh"
 

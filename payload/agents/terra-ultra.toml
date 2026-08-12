@@ -1,5 +1,5 @@
 name = "terra_ultra"
-description = "Corsia Terra parallela per pochi stream indipendenti di implementazione, scansione, test o analisi che il principale può ricomporre. Quota elevata: solo su richiesta/conferma, se supportato e senza ownership sovrapposta."
+description = "Terra ultra: Terra max + delegazione; 2-3 lane indipendenti, ownership disgiunta; uso limitato."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "ultra"
 

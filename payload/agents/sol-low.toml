@@ -1,5 +1,5 @@
 name = "sol_low"
-description = "Corsia Sol leggera per un compito piccolo e chiaro dove giudizio, polish o formulazione accurata contano più della velocità pura. Evitare lavoro meccanico o ad alto volume."
+description = "Sol low: task piccolo con giudizio/polish; no lavoro meccanico ad alto volume."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "low"
 

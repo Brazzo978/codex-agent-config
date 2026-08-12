@@ -1,5 +1,5 @@
 name = "luna_max"
-description = "Massima profondità Luna per un unico problema deterministico, eccezionalmente difficile ma molto circoscritto. Quota elevata: usare solo su richiesta/conferma e se supportato; cambiare famiglia se domina l'ambiguità."
+description = "Luna max: default Luna; massima profondità su lavoro chiaro/circoscritto; cambia famiglia se cresce l'ambiguità."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "max"
 

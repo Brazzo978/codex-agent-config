@@ -1,5 +1,5 @@
 name = "sol_medium"
-description = "Sol bilanciato per lavoro moderatamente ambiguo e multi-step, pianificazione, sintesi e deliverable curati che richiedono più giudizio della normale esecuzione Terra."
+description = "Sol medium: default Sol; architettura, pianificazione, sintesi, ambiguità moderata."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "medium"
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Route agents by task fit, capability, and cost"
-  default_prompt: "Use $route-subagents to apply workload fit and the dated intelligence/API-cost table, choose the cheapest sufficient profile, protect my usage budget, delegate, and verify."
+  short_description: "Select agents by workload, capability, and cost"
+  default_prompt: "Use $route-subagents to derive W and R, apply the static fitness index, spawn the selected route, and verify the result."

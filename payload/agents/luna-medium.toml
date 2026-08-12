@@ -1,5 +1,5 @@
 name = "luna_medium"
-description = "Corsia rapida per compiti chiari e ripetibili che richiedono alcuni controlli: trasformazioni strutturate, sintesi concise, batch ed edit strettamente specificati. Evitare architettura e indagini aperte."
+description = "Luna medium: task chiaro/ripetibile con controlli; no architettura o indagine aperta."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 

@@ -1,5 +1,5 @@
 name = "terra_low"
-description = "Corsia veloce per ricerca mirata nel codice, mappatura file, triage log e raccolta di evidenze semplici. Ideale per un riepilogo fattuale conciso, non per decisioni o fix complessi."
+description = "Terra low: code lookup, file map, log triage, evidenze semplici; no fix complesso."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "low"
 

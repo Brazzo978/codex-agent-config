@@ -1,5 +1,5 @@
 name = "spark_medium"
-description = "Prima scelta per coding one-shot, lookup mirati, micro-fix ovvi e spiegazioni brevi con poco contesto: è quasi istantaneo e usa una quota separata da GPT-5.6. Evitare lavoro multi-file, ambiguo o ad alto rischio."
+description = "Spark medium: microtask quasi istantaneo, poco contesto, quota separata; no multi-file/ambiguità/rischio."
 model = "gpt-5.3-codex-spark"
 model_reasoning_effort = "medium"
 

@@ -1,5 +1,5 @@
 name = "sol_max"
-description = "Massima profondità Sol per un unico problema indivisibile, decisione critica o verifica finale eccezionalmente difficile. Quota elevata: usare solo su richiesta/conferma quando la qualità vale più di latenza e consumo."
+description = "Sol max: problema ultra-complesso indivisibile; solo richiesta esplicita o conferma motivata."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "max"
 

@@ -55,7 +55,7 @@ Restart the Codex desktop app and start a new task after installation or update.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
 
-The router applies official workload fit first, then a dated Artificial Analysis Intelligence Index and full-suite API-cost table for each concrete model-plus-effort profile. It treats intelligence as a minimum capability threshold and chooses the cheapest natural-fit profile that reaches it; it does not use a naive intelligence/cost ratio. Spark remains the fastest self-contained microtask lane with separate usage and is not scored by that benchmark. Max and Ultra require confirmation before automatic use.
+The router estimates only workload class and required intelligence, then applies a compact lexicographic fitness vector over eligibility, family fit, and empirical API cost. Luna defaults to Max unless the task is positively simple; Terra defaults to High and may use Max for complex execution; Sol defaults to Medium, while Sol Max is confirmation-gated and Sol Ultra is explicit-request-only. Spark remains the separate-budget microtask lane.
 
 ## Ask Codex to install it
 

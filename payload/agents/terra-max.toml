@@ -1,5 +1,5 @@
 name = "terra_max"
-description = "Massima profondità Terra per una singola implementazione o indagine tecnica eccezionalmente difficile con obiettivo deciso. Quota elevata: usare solo su richiesta/conferma quando la profondità vale più della latenza."
+description = "Terra max: esecuzione/indagine complessa con obiettivo e architettura decisi."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "max"
 

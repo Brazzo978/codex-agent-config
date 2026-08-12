@@ -1,5 +1,5 @@
 name = "sol_ultra"
-description = "Orchestrazione Sol per pochi stream indipendenti di ricerca, analisi, review o implementazione dentro un problema complesso. Quota elevata: solo su richiesta/conferma e se supportato; non è un Max più forte."
+description = "Sol ultra: Sol max + delegazione; esclusivamente su richiesta esplicita."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "ultra"
 
