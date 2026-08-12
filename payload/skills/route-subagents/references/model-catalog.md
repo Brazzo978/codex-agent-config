@@ -22,6 +22,12 @@ primary_select:
   unknown_D: route_table[W][default]
   sol_max: apply_gate
 
+spark_context_gate:
+  published_token_limit: unknown
+  require: [tiny_self_contained_context, few_local_inputs, short_output]
+  reject: [multi_file_context, long_documents, broad_history, many_tool_traces, cross_source_synthesis]
+  overflow: escalate_once_without_spark_retry
+
 fit: # 2=natural, 1=fallback, 0=invalid
   spark: {spark: 2, luna: 1, terra: 0, sol: 0}
   luna:  {spark: 0, luna: 2, terra: 1, sol: 1}
@@ -77,3 +83,16 @@ explicit_profile:
   unavailable: stop
   substitution: forbidden
 ```
+
+## Standard examples
+
+- "Give me the exact command to rename this Git branch." -> `spark_medium`.
+- "Extract names and dates from 500 identical records." -> `luna_low`.
+- "Write a simple ten-page product description from this fixed outline." -> `luna_medium`.
+- "Check every edge case in this bounded deterministic transformation." -> `luna_xhigh`.
+- "Implement this settled feature across several files and run its tests." -> `terra_high`.
+- "Investigate and fix this complex regression; the architecture is already decided." -> `terra_max`.
+- "Choose between these architectures and explain the tradeoffs." -> `sol_medium`.
+- "Audit a high-risk cross-system design with subtle assumptions." -> `sol_xhigh`.
+
+Task size changes time and batching, not family by itself. Spark additionally requires the complete relevant context to stay tiny and local.

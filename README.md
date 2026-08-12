@@ -49,13 +49,14 @@ Restart the Codex desktop app and start a new task after installation or update.
 - Missing managed files are installed.
 - Identical files are left untouched.
 - Differing managed files are backed up beneath `~/.codex/backups/codex-agent-config/<timestamp>/` before replacement.
+- Obsolete files previously managed by this bundle are backed up before removal.
 - Other custom agents and skills are not removed.
 - Existing global `AGENTS.md` content is preserved outside the managed routing markers.
 - `-Check` or `--check` is read-only and exits nonzero if the installed bundle is missing or differs.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
 
-The router presents plain-language standard examples first, then a precomputed workload/difficulty table; the fitness vector is only for cross-family fallback or audit. This keeps routing usable by lightweight orchestrators. Luna defaults to Max unless positively simple; Terra defaults to High and may use Max for complex execution; Sol defaults to Medium, while Sol Max is confirmation-gated and Sol Ultra is explicit-request-only. Spawned task names append compact model/effort codes such as `scansione_rete_l_xh`.
+The router presents plain-language standard examples first, then one merged catalog with the precomputed workload/difficulty table; the fitness vector is only for cross-family fallback or audit. Spark is eligible only when the complete relevant context is small and local, not for multi-file repositories, long documents, broad history, tool-heavy work, or cross-source synthesis. Luna defaults to Max unless positively simple; Terra defaults to High and may use Max for complex execution; Sol defaults to Medium, while Sol Max is confirmation-gated and Sol Ultra is explicit-request-only. Spawned task names append compact model/effort codes such as `scansione_rete_l_xh`.
 
 ## Ask Codex to install it
 

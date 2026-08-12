@@ -132,6 +132,27 @@ install_file() {
   changed=$((changed + 1))
 }
 
+remove_managed_legacy_file() {
+  destination=$1
+  relative=$2
+  if [ ! -e "$destination" ] && [ ! -L "$destination" ]; then
+    return 0
+  fi
+  assert_safe_destination "$destination"
+
+  if [ "$mode" = check ]; then
+    printf '%s\n' "STALE    $relative"
+    failures=$((failures + 1))
+    return 0
+  fi
+
+  backup_existing "$destination" "$relative"
+  rm -f -- "$destination" || fail "could not remove obsolete managed file: $destination"
+  [ ! -e "$destination" ] && [ ! -L "$destination" ] || fail "obsolete managed file remains: $destination"
+  printf '%s\n' "REMOVED  $relative"
+  changed=$((changed + 1))
+}
+
 assert_regular_source "$source_routing"
 find "$source_agents" -type f -name '*.toml' -print | sort > "$tmp_root/agents.list"
 agent_count=$(wc -l < "$tmp_root/agents.list" | tr -d ' ')
@@ -151,6 +172,10 @@ while IFS= read -r source; do
   relative_inside=${source#"$skill_prefix"}
   install_file "$source" "$codex_home/skills/route-subagents/$relative_inside" "skills/route-subagents/$relative_inside"
 done < "$tmp_root/skill.list"
+
+legacy_routing_examples_relative=skills/route-subagents/references/routing-examples.md
+legacy_routing_examples=$codex_home/$legacy_routing_examples_relative
+remove_managed_legacy_file "$legacy_routing_examples" "$legacy_routing_examples_relative"
 
 {
   printf '%s\n' "$begin_marker"
@@ -248,6 +273,8 @@ while IFS= read -r source; do
   relative_inside=${source#"$skill_prefix"}
   cmp -s "$source" "$codex_home/skills/route-subagents/$relative_inside" || fail "final verification failed: skills/route-subagents/$relative_inside"
 done < "$tmp_root/skill.list"
+
+[ ! -e "$legacy_routing_examples" ] && [ ! -L "$legacy_routing_examples" ] || fail "final verification failed: obsolete routing-examples.md remains installed"
 
 awk -v begin="$begin_marker" -v end="$end_marker" '
   { line=$0; sub(/\r$/, "", line) }

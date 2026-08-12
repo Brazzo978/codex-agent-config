@@ -128,6 +128,26 @@ function Install-PayloadFile {
     $script:Changed++
 }
 
+function Remove-ManagedLegacyFile {
+    param([string]$Destination, [string]$RelativePath)
+    if (-not (Test-Path -LiteralPath $Destination)) { return }
+    Assert-SafeDestinationFile $Destination
+
+    if ($Check) {
+        Write-Output "STALE    $RelativePath"
+        $script:Failures++
+        return
+    }
+
+    Backup-ExistingFile $Destination $RelativePath
+    Remove-Item -LiteralPath $Destination -Force
+    if (Test-Path -LiteralPath $Destination) {
+        throw "Could not remove obsolete managed file: $Destination"
+    }
+    Write-Output "REMOVED  $RelativePath"
+    $script:Changed++
+}
+
 Assert-RegularSourceFile $sourceRouting
 $agentFiles = @(Get-ChildItem -LiteralPath $sourceAgents -File -Filter '*.toml' | Sort-Object Name)
 if ($agentFiles.Count -ne 19) {
@@ -150,6 +170,10 @@ foreach ($file in $skillFiles) {
     $relative = "skills\route-subagents\$relativeInsideSkill"
     Install-PayloadFile $file.FullName (Join-Path $codexHome $relative) $relative
 }
+
+$legacyRoutingExamplesRelative = 'skills\route-subagents\references\routing-examples.md'
+$legacyRoutingExamples = Join-Path $codexHome $legacyRoutingExamplesRelative
+Remove-ManagedLegacyFile $legacyRoutingExamples $legacyRoutingExamplesRelative
 
 $routingText = Normalize-Text ([IO.File]::ReadAllText($sourceRouting))
 $managedBlock = "$beginMarker`n$routingText`n$endMarker"
@@ -209,6 +233,9 @@ if (-not $Check) {
         if (-not (Test-SameFile $file.FullName (Join-Path $codexHome "skills\route-subagents\$relativeInsideSkill"))) {
             throw "Final verification failed for skill file: $relativeInsideSkill"
         }
+    }
+    if (Test-Path -LiteralPath $legacyRoutingExamples) {
+        throw "Final verification failed: obsolete routing-examples.md remains installed."
     }
     $installedAgentsText = Normalize-Text ([IO.File]::ReadAllText($globalAgents))
     $installedMatches = [regex]::Matches($installedAgentsText, $pattern)

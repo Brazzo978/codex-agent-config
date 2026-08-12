@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Route agents with simple examples first"
-  default_prompt: "Use $route-subagents to match a plain-language example first, use the static table only if needed, label the task, spawn it, and verify the result."
+  short_description: "Route agents with context and fit gates"
+  default_prompt: "Use $route-subagents to match a simple example, enforce Spark's small-context gate, consult the merged catalog only if needed, label and spawn the task, then verify the result."

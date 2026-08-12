@@ -11,7 +11,7 @@ Honor an explicit profile exactly. If unavailable, stop.
 
 Match these before reading the catalog. Do not calculate fitness when an example fits.
 
-- One command, syntax answer, tiny obvious fix, or narrow lookup -> `spark_medium`.
+- One command, syntax answer, tiny obvious fix, or narrow lookup with all required context already small and local -> `spark_medium`.
 - Purely mechanical extraction, classification, formatting, or identical repetition with no judgment -> `luna_low`.
 - Clear repeatable transformation or structured summary requiring a few checks -> `luna_medium`.
 - A simple ten-page description, summary, translation, or rewrite with clear instructions -> `luna_medium`. Length alone does not require Terra or Sol.
@@ -27,6 +27,8 @@ Match these before reading the catalog. Do not calculate fitness when an example
 - Ultra-complex indivisible Sol work -> ask before `sol_max`. Use `sol_ultra` only when explicitly requested.
 
 If no example fits, choose the family by the dominant need: clear/repeatable -> Luna; repository/tools -> Terra; ambiguity/judgment -> Sol. Then load `references/model-catalog.md` and use its route table. Use fitness math only for cross-family fallback or audit.
+
+Spark has a hard context-fit gate: reject it for multi-file context, long documents, broad conversation history, many tool traces, or cross-source synthesis. If the task or required context grows, escalate once to Luna, Terra, or Sol; do not retry the unsuitable Spark lane.
 
 For every spawn:
 
