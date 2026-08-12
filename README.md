@@ -55,7 +55,7 @@ Restart the Codex desktop app and start a new task after installation or update.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
 
-The router uses a precomputed workload/difficulty table; the compact fitness vector remains only for cross-family fallback or audit. Luna defaults to Max unless positively simple; Terra defaults to High and may use Max for complex execution; Sol defaults to Medium, while Sol Max is confirmation-gated and Sol Ultra is explicit-request-only. Spawned task names append compact model/effort codes such as `scansione_rete_l_xh`.
+The router presents plain-language standard examples first, then a precomputed workload/difficulty table; the fitness vector is only for cross-family fallback or audit. This keeps routing usable by lightweight orchestrators. Luna defaults to Max unless positively simple; Terra defaults to High and may use Max for complex execution; Sol defaults to Medium, while Sol Max is confirmation-gated and Sol Ultra is explicit-request-only. Spawned task names append compact model/effort codes such as `scansione_rete_l_xh`.
 
 ## Ask Codex to install it
 

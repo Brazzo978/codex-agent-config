@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Select agents from a static workload table"
-  default_prompt: "Use $route-subagents to classify W and D, select the static route, label the task with model/effort codes, spawn it, and verify the result."
+  short_description: "Route agents with simple examples first"
+  default_prompt: "Use $route-subagents to match a plain-language example first, use the static table only if needed, label the task, spawn it, and verify the result."
