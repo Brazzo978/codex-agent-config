@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Select agents by workload, capability, and cost"
-  default_prompt: "Use $route-subagents to derive W and R, apply the static fitness index, spawn the selected route, and verify the result."
+  short_description: "Select agents from a static workload table"
+  default_prompt: "Use $route-subagents to classify W and D, select the static route, label the task with model/effort codes, spawn it, and verify the result."

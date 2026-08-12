@@ -1,17 +1,12 @@
 # route-examples
 
 ```yaml
-microtask: spark_medium
-luna_simple: minimum_R_match
-long_simple_text: {W: luna, R: simple, select: minimum_cost_eligible_luna}
-luna_default: luna_max
-terra_normal: terra_high
-terra_subtle: terra_xhigh
-terra_complex: terra_max
-sol_normal: sol_medium
-sol_difficult: sol_high
-sol_exceptional: sol_xhigh
-short_complex_architecture: {W: sol, R: difficult_or_higher}
-sol_ultra_complex_indivisible: sol_max_with_gate
-parallel: {luna: implicit_if_eligible, terra: limited, sol: explicit_only}
+one_command: {W: spark, D: micro, profile: spark_medium, task_name: comando_sp_m}
+ten_page_simple_description: {W: luna, D: simple, profile: luna_medium, task_name: descrizione_l_m}
+bounded_local_scan: {W: luna, D: hard_bounded, profile: luna_xhigh, task_name: scansione_rete_l_xh}
+multi_file_debug: {W: terra, D: normal, profile: terra_high, task_name: debug_multifile_t_h}
+complex_settled_implementation: {W: terra, D: complex, profile: terra_max, task_name: implementazione_t_mx}
+short_architecture_decision: {W: sol, D: normal, profile: sol_medium, task_name: architettura_s_m}
+critical_cross_system_analysis: {W: sol, D: exceptional, profile: sol_xhigh, task_name: analisi_cross_system_s_xh}
+ultra_complex_indivisible: {W: sol, D: ultra_complex_indivisible, profile: sol_max, gate: required, task_name: problema_critico_s_mx}
 ```

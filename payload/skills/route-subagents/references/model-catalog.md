@@ -6,15 +6,21 @@ external_lookup: false
 
 input:
   W: [spark, luna, terra, sol]
-  R: integer
+  D: family_specific_route_key
+  R: integer_optional_fallback
   R_basis: [reasoning_complexity, ambiguity, risk, context_coupling, verification]
   R_not_increased_by: [text_length, item_count, repetitive_volume]
 
-defaults:
-  spark: {profile: spark_medium}
-  luna: {R: 52, profile: luna_max, lower_only_if_positive_simple: true}
-  terra: {R_normal: 50, R_subtle: 53, R_complex: 57}
-  sol: {R_normal: 56, R_difficult: 57, R_exceptional: 59, R_max: 61}
+route_table:
+  spark: {micro: spark_medium, default: spark_medium}
+  luna: {mechanical: luna_low, simple: luna_medium, checked: luna_high, hard_bounded: luna_xhigh, default: luna_max}
+  terra: {lookup: terra_low, routine: terra_medium, normal: terra_high, subtle_high_risk: terra_xhigh, complex: terra_max, default: terra_high}
+  sol: {small_judgment: sol_low, normal: sol_medium, difficult: sol_high, exceptional: sol_xhigh, ultra_complex_indivisible: sol_max, default: sol_medium}
+
+primary_select:
+  profile: route_table[W][D]
+  unknown_D: route_table[W][default]
+  sol_max: apply_gate
 
 fit: # 2=natural, 1=fallback, 0=invalid
   spark: {spark: 2, luna: 1, terra: 0, sol: 0}
@@ -57,6 +63,14 @@ fitness:
   require: [A=1]
   priority: [eligibility, workload_fit, cost]
   forbidden: [raw_I_div_C, silent_R_reduction, api_USD_as_chatgpt_credits]
+  use: cross_family_fallback_or_audit_only
+
+gui_task_name:
+  format: scope_model_effort
+  model_code: {spark: sp, luna: l, terra: t, sol: s}
+  effort_code: {low: l, medium: m, high: h, xhigh: xh, max: mx, ultra: u}
+  constraints: [lowercase, digits, underscores]
+  example: scansione_rete_l_xh
 
 explicit_profile:
   priority: highest

@@ -7,11 +7,12 @@ description: Dynamically choose and spawn the best available Codex custom-agent 
 
 1. Load `references/model-catalog.md`; do not refresh externally.
 2. Explicit profile: use exactly; unavailable => stop.
-3. Implicit profile: derive only `W` and `R`; apply `argmax_lex(V)`.
+3. Implicit profile: derive `W` and `D`; use `route_table[W][D]`. Use fitness formula only for cross-family fallback/audit.
 4. Spark-eligible microtask => `spark_medium`.
 5. Apply Max/Ultra gates from catalog.
-6. Spawn minimum bounded lanes; no overlapping ownership or redundant retries.
-7. Primary agent owns synthesis, verification, acceptance, and evidence-based escalation.
+6. Set `task_name=<scope>_<model_code>_<effort_code>` from catalog; keep scope short.
+7. Spawn minimum bounded lanes; no overlapping ownership or redundant retries.
+8. Primary agent owns synthesis, verification, acceptance, and evidence-based escalation.
 
 Constraints:
 
