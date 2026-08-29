@@ -4,6 +4,12 @@ set -eu
 
 mode=install
 target_dir=''
+opencode_host=''
+opencode_model=''
+opencode_backend='auto'
+llamacode_user='root'
+llamacode_ssh_key=''
+llamacode_workspace=''
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --check)
@@ -16,8 +22,40 @@ while [ "$#" -gt 0 ]; do
       target_dir=$2
       shift 2
       ;;
+    --opencode-host|--llamacode-host)
+      [ "$#" -ge 2 ] || { printf '%s\n' 'ERROR: --opencode-host requires an IP, hostname, or URL' >&2; exit 2; }
+      [ -n "$2" ] || { printf '%s\n' 'ERROR: --opencode-host requires a non-empty value' >&2; exit 2; }
+      opencode_host=$2
+      shift 2
+      ;;
+    --opencode-model|--llamacode-profile)
+      [ "$#" -ge 2 ] || { printf '%s\n' 'ERROR: --opencode-model requires a model name' >&2; exit 2; }
+      [ -n "$2" ] || { printf '%s\n' 'ERROR: --opencode-model requires a non-empty value' >&2; exit 2; }
+      opencode_model=$2
+      shift 2
+      ;;
+    --opencode-backend)
+      [ "$#" -ge 2 ] || { printf '%s\n' 'ERROR: --opencode-backend requires auto, ollama, or llamacode' >&2; exit 2; }
+      case "$2" in auto|ollama|llamacode) opencode_backend=$2 ;; *) printf '%s\n' 'ERROR: invalid --opencode-backend' >&2; exit 2 ;; esac
+      shift 2
+      ;;
+    --llamacode-user)
+      [ "$#" -ge 2 ] && [ -n "$2" ] || { printf '%s\n' 'ERROR: --llamacode-user requires a value' >&2; exit 2; }
+      llamacode_user=$2
+      shift 2
+      ;;
+    --llamacode-ssh-key)
+      [ "$#" -ge 2 ] && [ -n "$2" ] || { printf '%s\n' 'ERROR: --llamacode-ssh-key requires a path' >&2; exit 2; }
+      llamacode_ssh_key=$2
+      shift 2
+      ;;
+    --llamacode-workspace)
+      [ "$#" -ge 2 ] && [ -n "$2" ] || { printf '%s\n' 'ERROR: --llamacode-workspace requires a remote path' >&2; exit 2; }
+      llamacode_workspace=$2
+      shift 2
+      ;;
     --help|-h)
-      printf '%s\n' 'Usage: sh install.sh [--check] [--target-dir PATH]'
+      printf '%s\n' 'Usage: sh install.sh [--check] [--target-dir PATH] [--opencode-host HOST|--llamacode-host HOST] [--opencode-model MODEL|--llamacode-profile PROFILE] [--opencode-backend auto|ollama|llamacode] [--llamacode-user USER] [--llamacode-ssh-key PATH] [--llamacode-workspace REMOTE_PATH]'
       exit 0
       ;;
     *)
@@ -158,7 +196,7 @@ find "$source_agents" -type f -name '*.toml' -print | sort > "$tmp_root/agents.l
 agent_count=$(wc -l < "$tmp_root/agents.list" | tr -d ' ')
 [ "$agent_count" = 19 ] || fail "expected 19 custom-agent profiles, found $agent_count"
 
-find "$source_skill" -type f -print | sort > "$tmp_root/skill.list"
+find "$source_skill" -type f ! -name '*.pyc' ! -path '*/__pycache__/*' -print | sort > "$tmp_root/skill.list"
 skill_count=$(wc -l < "$tmp_root/skill.list" | tr -d ' ')
 [ "$skill_count" -ge 3 ] || fail "route-subagents skill payload is incomplete"
 
@@ -172,6 +210,35 @@ while IFS= read -r source; do
   relative_inside=${source#"$skill_prefix"}
   install_file "$source" "$codex_home/skills/route-subagents/$relative_inside" "skills/route-subagents/$relative_inside"
 done < "$tmp_root/skill.list"
+
+if [ -n "$opencode_host" ]; then
+  command -v python3 >/dev/null 2>&1 || fail 'python3 is required for the OpenCode worker'
+  OPENCODE_HOST_INPUT=$opencode_host OPENCODE_MODEL_INPUT=$opencode_model OPENCODE_BACKEND_INPUT=$opencode_backend LLAMACODE_USER_INPUT=$llamacode_user LLAMACODE_KEY_INPUT=$llamacode_ssh_key LLAMACODE_WORKSPACE_INPUT=$llamacode_workspace python3 -c '
+import json, os
+backend = os.environ["OPENCODE_BACKEND_INPUT"]
+output_limit = 16384 if backend == "llamacode" else 32768
+value = {
+    "host": os.environ["OPENCODE_HOST_INPUT"],
+    "backend": backend,
+    "timeout": 0,
+    "max_context_bytes": 49152,
+    "effort": "medium",
+    "context_limit": 110592,
+    "output_limits": {"low": output_limit, "medium": output_limit, "xhigh": output_limit},
+}
+if os.environ.get("OPENCODE_MODEL_INPUT"):
+    value["model"] = os.environ["OPENCODE_MODEL_INPUT"]
+if backend == "llamacode":
+    value["ssh_user"] = os.environ["LLAMACODE_USER_INPUT"]
+    if os.environ.get("LLAMACODE_KEY_INPUT"):
+        value["ssh_key"] = os.path.abspath(os.environ["LLAMACODE_KEY_INPUT"])
+    value["launcher_command"] = "llamacode"
+    if os.environ.get("LLAMACODE_WORKSPACE_INPUT"):
+        value["remote_workspace"] = os.environ["LLAMACODE_WORKSPACE_INPUT"]
+print(json.dumps(value, indent=2))
+' > "$tmp_root/opencode-worker.json"
+  install_file "$tmp_root/opencode-worker.json" "$codex_home/opencode-worker.json" "opencode-worker.json"
+fi
 
 legacy_routing_examples_relative=skills/route-subagents/references/routing-examples.md
 legacy_routing_examples=$codex_home/$legacy_routing_examples_relative
@@ -290,3 +357,12 @@ if [ -n "$backup_root" ]; then
   printf '%s\n' "BACKUP: $backup_root"
 fi
 printf '%s\n' 'Restart Codex and start a new task to load the custom-agent types.'
+if [ -n "$opencode_host" ]; then
+  python3 "$codex_home/skills/route-subagents/scripts/opencode_worker.py" --config "$codex_home/opencode-worker.json" --healthcheck || fail 'OpenCode worker health check failed'
+  command -v codex >/dev/null 2>&1 || fail 'Codex CLI is required to register the local OpenCode MCP server'
+  backup_existing "$codex_home/config.toml" 'config.toml'
+  CODEX_HOME="$codex_home" codex mcp remove local_opencode_worker >/dev/null 2>&1 || true
+  CODEX_HOME="$codex_home" codex mcp add local_opencode_worker -- "$(command -v python3)" "$codex_home/skills/route-subagents/scripts/opencode_mcp.py" || fail 'could not register the local OpenCode MCP server'
+  CODEX_HOME="$codex_home" codex mcp get local_opencode_worker --json >/dev/null || fail 'OpenCode MCP registration verification failed'
+  printf '%s\n' 'REGISTERED local_opencode_worker MCP server'
+fi

@@ -1,0 +1,527 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+opencode=/root/.opencode/bin/opencode
+remote_helper=/usr/local/lib/llamacode/remote.py
+state_dir=/var/lib/llamacode-launcher
+sessions_root=/srv/llamacode/sessions
+agent_model_file=$state_dir/last-agent-model
+agent_effort_file=$state_dir/last-agent-effort
+remote_model_file=$state_dir/last-remote-model
+remote_effort_file=$state_dir/last-remote-effort
+default_agent_model=qwen38-agent-q6-128k
+default_agent_effort=medium
+default_remote_model=qwen38-remote-q4-216k
+default_remote_effort=medium
+launcher_self=$(readlink -f "$0")
+max_timeout=604800
+
+models=(
+  qwen38-agent-q6-128k
+  qwen38-agent-q4-216k
+  qwen38-remote-q4-216k
+  qwen38-remote-q4-128k
+  qwen38-remote-q4-256k
+)
+agent_models=(qwen38-agent-q6-128k qwen38-agent-q4-216k)
+
+label() {
+  case "$1" in
+    qwen38-agent-q6-128k) echo 'Agent Q6 128K · KV Q8/Q8 · MAX1' ;;
+    qwen38-agent-q4-216k) echo 'Agent Q4 216K · KV Q8/Q8 · MAX1' ;;
+    qwen38-remote-q4-216k) echo 'Remote Q4 216K · KV Q8/Q8 · MAX1' ;;
+    qwen38-remote-q4-128k) echo 'Remote Q4 128K · KV Q4/Q4 · MAX2' ;;
+    qwen38-remote-q4-256k) echo 'Remote Q4 256K · KV Q4/Q4 · MAX1' ;;
+  esac
+}
+
+valid_model() {
+  local candidate=$1 item
+  for item in "${models[@]}"; do
+    [[ $candidate == "$item" ]] && return 0
+  done
+  return 1
+}
+
+valid_agent_model() {
+  [[ $1 == qwen38-agent-q6-128k || $1 == qwen38-agent-q4-216k ]]
+}
+
+valid_remote_model() {
+  [[ $1 == qwen38-remote-q4-216k || $1 == qwen38-remote-q4-128k || $1 == qwen38-remote-q4-256k ]]
+}
+
+valid_name() {
+  [[ $1 =~ ^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$ ]]
+}
+
+valid_session() {
+  [[ $1 =~ ^ses[_A-Za-z0-9]+$ ]]
+}
+
+new_name() {
+  printf 'lc-%(%Y%m%d-%H%M%S)T-%04x' -1 "$((RANDOM & 65535))"
+}
+
+usage() {
+  cat <<'EOF'
+Usage:
+  llamacode                              interactive tmux agent launcher
+  llamacode run [options] PROMPT         compatible remote one-shot alias
+  llamacode remote create [options]      create a persistent MCP session
+  llamacode remote run [options] PROMPT  run/continue a task in named tmux
+  llamacode remote status [options]      inspect jobs or sessions
+  llamacode remote cancel [options]      abort a job/session
+  llamacode remote delete [options]      delete a session; optionally its files
+  llamacode remote sessions              list persistent OpenCode sessions
+  llamacode --list                       list model profiles
+  llamacode --status                     show active runtime profile
+
+Every logical session gets /srv/llamacode/sessions/NAME/{workspace,inbox,outbox,logs}.
+Remote agent mode grants full OpenCode permissions; bounded mode denies tools.
+EOF
+}
+
+ensure_layout() {
+  install -d -m 0755 "$state_dir" "$sessions_root"
+  install -d -m 0700 "$state_dir/jobs"
+}
+
+remember_agent_selection() {
+  printf '%s\n' "$1" > "$agent_model_file"
+  printf '%s\n' "$2" > "$agent_effort_file"
+}
+
+remember_remote_selection() {
+  printf '%s\n' "$1" > "$remote_model_file"
+  printf '%s\n' "$2" > "$remote_effort_file"
+}
+
+load_defaults() {
+  local saved
+  if [[ -r $agent_model_file ]]; then
+    read -r saved < "$agent_model_file"
+    valid_agent_model "$saved" && default_agent_model=$saved
+  fi
+  if [[ -r $agent_effort_file ]]; then
+    read -r saved < "$agent_effort_file"
+    [[ $saved =~ ^(low|medium|high)$ ]] && default_agent_effort=$saved
+  fi
+  if [[ -r $remote_model_file ]]; then
+    read -r saved < "$remote_model_file"
+    valid_remote_model "$saved" && default_remote_model=$saved
+  fi
+  if [[ -r $remote_effort_file ]]; then
+    read -r saved < "$remote_effort_file"
+    [[ $saved =~ ^(low|medium|high)$ ]] && default_remote_effort=$saved
+  fi
+}
+
+create_layout() {
+  local name=$1 project=${2:-} root=$sessions_root/$name
+  valid_name "$name" || { echo "Invalid session name: $name" >&2; return 2; }
+  [[ ! -e $root ]] || { echo "Session directory already exists: $root" >&2; return 2; }
+  install -d -m 0700 "$root" "$root/inbox" "$root/outbox" "$root/logs"
+  if [[ -n $project ]]; then
+    [[ $project == /* && -d $project ]] || { echo "Project directory not found: $project" >&2; return 2; }
+    ln -s -- "$project" "$root/workspace"
+  else
+    install -d -m 0700 "$root/workspace"
+  fi
+  printf '%s\n' "$root"
+}
+
+session_directory() {
+  "$remote_helper" get --session "$1" | python3 -c 'import json,sys; print(json.load(sys.stdin)["directory"])'
+}
+
+session_root_from_directory() {
+  local directory=$1 root
+  root=$(dirname -- "$directory")
+  [[ $root == "$sessions_root"/* ]] || { echo "Session is outside $sessions_root: $directory" >&2; return 2; }
+  printf '%s\n' "$root"
+}
+
+remote_create() {
+  local model=$default_remote_model effort=$default_remote_effort mode=agent name= title='LlamaCode remote session' project=
+  while (($#)); do
+    case "$1" in
+      -m|--model) model=${2:?missing model}; shift 2 ;;
+      --variant) effort=${2:?missing variant}; shift 2 ;;
+      --mode) mode=${2:?missing mode}; shift 2 ;;
+      --name|--session-name) name=${2:?missing session name}; shift 2 ;;
+      --title) title=${2:?missing title}; shift 2 ;;
+      --project|--dir) project=${2:?missing project directory}; shift 2 ;;
+      *) echo "Unknown remote create option: $1" >&2; return 2 ;;
+    esac
+  done
+  valid_remote_model "$model" || { echo "Remote mode requires a qwen38-remote-* profile: $model" >&2; return 2; }
+  [[ $effort =~ ^(low|medium|high)$ ]] || { echo "Invalid effort: $effort" >&2; return 2; }
+  [[ $mode =~ ^(agent|bounded)$ ]] || { echo "Invalid mode: $mode" >&2; return 2; }
+  name=${name:-$(new_name)}
+  local root directory session
+  root=$(create_layout "$name" "$project")
+  directory=$root/workspace
+  if ! session=$("$remote_helper" create --directory "$directory" --model "$model" --variant "$effort" --mode "$mode" --title "$title" --id-only); then
+    rm -rf -- "$root"
+    return 1
+  fi
+  remember_remote_selection "$model" "$effort"
+  python3 - "$name" "$session" "$directory" "$root/inbox" "$root/outbox" "$model" "$effort" "$mode" <<'PY'
+import json,sys
+keys=("name","session_id","workspace","inbox","outbox","model","variant","mode")
+print(json.dumps(dict(zip(keys,sys.argv[1:])),ensure_ascii=False))
+PY
+}
+
+remote_mark() {
+  local job= session= status= exit_code= timeout=
+  while (($#)); do
+    case "$1" in
+      --job|--job-name) job=${2:?missing job}; shift 2 ;;
+      --session) session=${2:?missing session}; shift 2 ;;
+      --status) status=${2:?missing status}; shift 2 ;;
+      --exit-code) exit_code=${2:?missing exit code}; shift 2 ;;
+      --timeout) timeout=${2:?missing timeout}; shift 2 ;;
+      *) echo "Unknown remote mark option: $1" >&2; return 2 ;;
+    esac
+  done
+  valid_name "$job" || { echo 'A valid --job is required' >&2; return 2; }
+  valid_session "$session" || { echo 'A valid --session is required' >&2; return 2; }
+  [[ $status =~ ^(queued|working|ready|failed|cancelled|stalled)$ ]] || { echo "Invalid job status: $status" >&2; return 2; }
+  [[ -z $exit_code || $exit_code =~ ^[0-9]+$ ]] || { echo "Invalid exit code: $exit_code" >&2; return 2; }
+  [[ -z $timeout || $timeout =~ ^[0-9]+$ ]] || { echo "Invalid timeout: $timeout" >&2; return 2; }
+  python3 - "$state_dir/jobs/$job.json" "$job" "$session" "$status" "$exit_code" "$timeout" <<'PY'
+import datetime,json,os,sys,tempfile
+path,job,session,status,exit_code,timeout=sys.argv[1:]
+try:
+    with open(path,encoding="utf-8") as handle:
+        value=json.load(handle)
+except (FileNotFoundError,OSError,ValueError,TypeError):
+    value={}
+now=datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00","Z")
+value.update(job_name=job,session_id=session,status=status,last_activity=now)
+value.setdefault("created_at",now)
+if timeout:
+    value["timeout_seconds"]=int(timeout)
+if status == "working":
+    value.setdefault("started_at",now)
+    value["finished_at"]=None
+    value["exit_code"]=None
+elif status in {"ready","failed","cancelled","stalled"}:
+    value["finished_at"]=now
+    value["exit_code"]=int(exit_code) if exit_code else None
+directory=os.path.dirname(path)
+os.makedirs(directory,mode=0o700,exist_ok=True)
+fd,temp=tempfile.mkstemp(prefix=os.path.basename(path)+".",dir=directory,text=True)
+try:
+    with os.fdopen(fd,"w",encoding="utf-8") as handle:
+        json.dump(value,handle,ensure_ascii=False,separators=(",",":"))
+        handle.write("\n")
+    os.chmod(temp,0o600)
+    os.replace(temp,path)
+finally:
+    try: os.unlink(temp)
+    except FileNotFoundError: pass
+print(json.dumps(value,ensure_ascii=False))
+PY
+}
+
+write_job_script() {
+  local script=$1 stdout=$2 stderr=$3 exit_file=$4 job=$5 session=$6
+  shift 6
+  {
+    printf '#!/usr/bin/env bash\nset +e\n'
+    printf 'mark_cancelled() { %q remote mark --job %q --session %q --status cancelled --exit-code 143 >/dev/null 2>&1 || true; printf "143\\n" > %q; exit 143; }\n' "$launcher_self" "$job" "$session" "$exit_file"
+    printf 'trap mark_cancelled HUP INT TERM\n'
+    printf '%q remote mark --job %q --session %q --status working >/dev/null\n' "$launcher_self" "$job" "$session"
+    printf 'echo %q >&2\n' "LlamaCode remote job started: $(basename "$(dirname "$script")")"
+    printf '%q ' "$@"
+    printf '\nrc=$?\ntrap - HUP INT TERM\nif ((rc == 0)); then state=ready; else state=failed; fi\n'
+    printf '%q remote mark --job %q --session %q --status "$state" --exit-code "$rc" >/dev/null 2>&1 || true\n' "$launcher_self" "$job" "$session"
+    printf 'printf "%%s\\n" "$rc" > %q\nexit "$rc"\n' "$exit_file"
+  } > "$script"
+  chmod 0700 "$script"
+  : > "$stdout"
+  : > "$stderr"
+}
+
+follow_job() {
+  local stdout=$1 stderr=$2 exit_file=$3 stdout_tail stderr_tail rc
+  tail -n +1 -F "$stdout" & stdout_tail=$!
+  tail -n +1 -F "$stderr" >&2 & stderr_tail=$!
+  trap 'kill "$stdout_tail" "$stderr_tail" 2>/dev/null || true' EXIT HUP INT TERM
+  while [[ ! -r $exit_file ]]; do sleep 0.2; done
+  sleep 0.3
+  rc=$(<"$exit_file")
+  kill "$stdout_tail" "$stderr_tail" 2>/dev/null || true
+  wait "$stdout_tail" "$stderr_tail" 2>/dev/null || true
+  trap - EXIT HUP INT TERM
+  return "$rc"
+}
+
+remote_run() {
+  local model=$default_remote_model effort=$default_remote_effort mode=agent session= name= job_name= project= title='LlamaCode MCP task' timeout=0 detach=0
+  local -a files=()
+  local task=
+  while (($#)); do
+    case "$1" in
+      -m|--model) model=${2:?missing model}; shift 2 ;;
+      --variant) effort=${2:?missing variant}; shift 2 ;;
+      --mode) mode=${2:?missing mode}; shift 2 ;;
+      --session) session=${2:?missing session id}; shift 2 ;;
+      --name|--session-name) name=${2:?missing session name}; shift 2 ;;
+      --job-name) job_name=${2:?missing job name}; shift 2 ;;
+      --project|--dir) project=${2:?missing project directory}; shift 2 ;;
+      --title) title=${2:?missing title}; shift 2 ;;
+      --timeout) timeout=${2:?missing timeout}; shift 2 ;;
+      --file) files+=("${2:?missing file}"); shift 2 ;;
+      --auto) mode=agent; shift ;;
+      --pure) mode=bounded; shift ;;
+      --format) shift 2 ;;
+      --detach) detach=1; shift ;;
+      --) shift; task=${*:-}; break ;;
+      *) task=$1; shift; (($# == 0)) || { echo "Prompt must be the final argument (or follow --)" >&2; return 2; } ;;
+    esac
+  done
+  [[ -n $task ]] || { echo 'Remote run requires a prompt' >&2; return 2; }
+  valid_remote_model "$model" || { echo "Remote mode requires a qwen38-remote-* profile: $model" >&2; return 2; }
+  [[ $effort =~ ^(low|medium|high)$ ]] || { echo "Invalid effort: $effort" >&2; return 2; }
+  [[ $mode =~ ^(agent|bounded)$ ]] || { echo "Invalid mode: $mode" >&2; return 2; }
+  [[ $timeout =~ ^[0-9]+$ && ( $timeout -eq 0 || ( $timeout -ge 10 && $timeout -le $max_timeout ) ) ]] || { echo "Invalid timeout: $timeout" >&2; return 2; }
+
+  local created root directory inbox outbox
+  if [[ -z $session ]]; then
+    local -a create_args=(--model "$model" --variant "$effort" --mode "$mode" --title "$title")
+    [[ -n $name ]] && create_args+=(--name "$name")
+    [[ -n $project ]] && create_args+=(--project "$project")
+    created=$(remote_create "${create_args[@]}")
+    session=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["session_id"])' <<<"$created")
+    directory=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["workspace"])' <<<"$created")
+  else
+    valid_session "$session" || { echo "Invalid OpenCode session id: $session" >&2; return 2; }
+    directory=$(session_directory "$session")
+  fi
+  root=$(session_root_from_directory "$directory")
+  inbox=$root/inbox
+  outbox=$root/outbox
+  install -d -m 0700 "$inbox" "$outbox" "$root/logs"
+
+  local -a staged=() helper_args
+  local source destination base index=0
+  for source in "${files[@]}"; do
+    [[ -f $source ]] || { echo "Attachment not found: $source" >&2; return 2; }
+    base=$(basename -- "$source")
+    base=${base//[^A-Za-z0-9._-]/_}
+    destination=$inbox/$(printf '%02d-%s' "$index" "$base")
+    cp -- "$source" "$destination"
+    staged+=("$destination")
+    ((index+=1))
+  done
+
+  job_name=${job_name:-mcp-${session:0:12}-$(date +%H%M%S)-$((RANDOM & 4095))}
+  valid_name "$job_name" || { echo "Invalid job name: $job_name" >&2; return 2; }
+  tmux has-session -t "=$job_name" 2>/dev/null && { echo "tmux session already exists: $job_name" >&2; return 2; }
+  local job_dir stdout stderr exit_file script status_file
+  job_dir=$root/logs/$job_name
+  stdout=$job_dir/stdout.json
+  stderr=$job_dir/stderr.log
+  exit_file=$job_dir/exit-code
+  script=$job_dir/run.sh
+  status_file=$job_dir/status.json
+  install -d -m 0700 "$job_dir"
+  helper_args=("$remote_helper" prompt --session "$session" --directory "$directory" --model "$model" --variant "$effort" --mode "$mode" --timeout "$timeout")
+  for source in "${staged[@]}"; do helper_args+=(--file "$source"); done
+  helper_args+=("$task")
+  remote_mark --job "$job_name" --session "$session" --status queued --timeout "$timeout" >/dev/null
+  ln -sfn -- "$state_dir/jobs/$job_name.json" "$status_file"
+  write_job_script "$script" "$stdout" "$stderr" "$exit_file" "$job_name" "$session" "${helper_args[@]}"
+  tmux new-session -d -s "$job_name" -c "$directory" "$script >\"$stdout\" 2>\"$stderr\""
+  remember_remote_selection "$model" "$effort"
+  if ((detach)); then
+    python3 - "$job_name" "$session" "$directory" "$inbox" "$outbox" "$stdout" "$stderr" "$status_file" <<'PY'
+import json,sys
+keys=("job_name","session_id","workspace","inbox","outbox","stdout","stderr","status_file")
+print(json.dumps(dict(zip(keys,sys.argv[1:])),ensure_ascii=False))
+PY
+    return 0
+  fi
+  follow_job "$stdout" "$stderr" "$exit_file"
+}
+
+remote_status() {
+  local session= job=
+  while (($#)); do
+    case "$1" in
+      --session) session=${2:?missing session}; shift 2 ;;
+      --job|--job-name) job=${2:?missing job}; shift 2 ;;
+      *) echo "Unknown remote status option: $1" >&2; return 2 ;;
+    esac
+  done
+  if [[ -n $session ]]; then
+    "$remote_helper" get --session "$session" --directory "$(session_directory "$session")"
+  elif [[ -n $job ]]; then
+    valid_name "$job" || return 2
+    if [[ -r $state_dir/jobs/$job.json ]]; then
+      cat "$state_dir/jobs/$job.json"
+    elif tmux has-session -t "=$job" 2>/dev/null; then
+      printf '{"job_name":"%s","status":"working"}\n' "$job"
+    else
+      printf '{"job_name":"%s","status":"failed","error":"job metadata not found"}\n' "$job"
+    fi
+  else
+    tmux list-sessions -F '#{session_name}\t#{session_created}\t#{session_attached}' 2>/dev/null || true
+  fi
+}
+
+remote_cancel() {
+  local session= job= directory= job_was_running=0
+  while (($#)); do
+    case "$1" in
+      --session) session=${2:?missing session}; shift 2 ;;
+      --job|--job-name) job=${2:?missing job}; shift 2 ;;
+      *) echo "Unknown remote cancel option: $1" >&2; return 2 ;;
+    esac
+  done
+  if [[ -n $session ]]; then
+    directory=$(session_directory "$session")
+    "$remote_helper" abort --session "$session" --directory "$directory" >/dev/null
+  fi
+  if [[ -n $job ]] && valid_name "$job" && tmux has-session -t "=$job" 2>/dev/null; then
+    job_was_running=1
+    tmux kill-session -t "=$job"
+  fi
+  if ((job_was_running)) && [[ -n $session ]] && valid_session "$session"; then
+    remote_mark --job "$job" --session "$session" --status cancelled --exit-code 143 >/dev/null
+  fi
+  printf '{"ok":true,"session_id":"%s","job_name":"%s"}\n' "$session" "$job"
+}
+
+remote_messages() {
+  local session= limit=20
+  while (($#)); do
+    case "$1" in
+      --session) session=${2:?missing session}; shift 2 ;;
+      --limit) limit=${2:?missing limit}; shift 2 ;;
+      *) echo "Unknown remote messages option: $1" >&2; return 2 ;;
+    esac
+  done
+  valid_session "$session" || { echo 'A valid --session is required' >&2; return 2; }
+  "$remote_helper" messages --session "$session" --limit "$limit"
+}
+
+remote_delete() {
+  local session= remove_files=0 directory root
+  while (($#)); do
+    case "$1" in
+      --session) session=${2:?missing session}; shift 2 ;;
+      --remove-files) remove_files=1; shift ;;
+      *) echo "Unknown remote delete option: $1" >&2; return 2 ;;
+    esac
+  done
+  valid_session "$session" || { echo 'A valid --session is required' >&2; return 2; }
+  directory=$(session_directory "$session")
+  root=$(session_root_from_directory "$directory")
+  "$remote_helper" abort --session "$session" --directory "$directory" >/dev/null || true
+  "$remote_helper" delete --session "$session" --directory "$directory" >/dev/null
+  if ((remove_files)); then
+    [[ $root == "$sessions_root"/* && $root != "$sessions_root" ]] || { echo "Unsafe session root: $root" >&2; return 2; }
+    rm -rf -- "$root"
+  fi
+  printf '{"ok":true,"session_id":"%s","removed_files":%s}\n' "$session" "$([[ $remove_files == 1 ]] && echo true || echo false)"
+}
+
+interactive() {
+  local status current model=$default_agent_model effort=$default_agent_effort action choice name project created session directory root tmux_name
+  status=$(curl -fsS http://127.0.0.1:11434/_profile/status)
+  current=$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("profile") or "none")' <<<"$status")
+  echo "Currently loaded: $current"
+  echo 'Qwen3.8 profile:'
+  local index=1 marker item
+  for item in "${agent_models[@]}"; do
+    marker=; [[ $item == "$current" ]] && marker=' [loaded]'; [[ $item == "$default_agent_model" ]] && marker="$marker [default]"
+    printf '  %d) %s%s\n' "$index" "$(label "$item")" "$marker"
+    ((index+=1))
+  done
+  read -r -p 'Model [Enter = default]: ' choice
+  if [[ -n $choice ]]; then
+    [[ $choice =~ ^[1-2]$ ]] && model=${agent_models[$((choice-1))]} || model=$choice
+  fi
+  valid_agent_model "$model" || { echo "Interactive mode requires a qwen38-agent-* profile: $model" >&2; return 2; }
+  read -r -p "Effort low/medium/high [$effort]: " choice
+  effort=${choice:-$effort}
+  [[ $effort =~ ^(low|medium|high)$ ]] || { echo "Invalid effort: $effort" >&2; return 2; }
+  read -r -p 'New session or resume? [new/resume]: ' action
+  action=${action:-new}
+  if [[ $action == resume ]]; then
+    "$remote_helper" sessions --limit 100 | python3 -c 'import json,sys; root="/srv/llamacode/sessions/"; [print(f"{x[chr(105)+chr(100)]}\t{x.get(chr(116)+chr(105)+chr(116)+chr(108)+chr(101),chr(34)+chr(34))}\t{x.get(chr(100)+chr(105)+chr(114)+chr(101)+chr(99)+chr(116)+chr(111)+chr(114)+chr(121),chr(34)+chr(34))}") for x in json.load(sys.stdin) if x.get("directory","").startswith(root)]'
+    read -r -p 'OpenCode session id: ' session
+    valid_session "$session" || { echo 'Invalid session id' >&2; return 2; }
+    directory=$(session_directory "$session")
+    "$remote_helper" set-model --session "$session" --model "$model" --variant "$effort" >/dev/null
+    "$remote_helper" set-permission --session "$session" --directory "$directory" --mode agent >/dev/null
+    root=$(session_root_from_directory "$directory")
+    name=$(basename "$root")
+  else
+    read -r -p "Session name [$(new_name)]: " name
+    name=${name:-$(new_name)}
+    read -r -p 'Existing project directory [blank = isolated workspace]: ' project
+    local -a create_args=(--model "$model" --variant "$effort" --mode agent --name "$name" --title "Interactive $name")
+    [[ -n $project ]] && create_args+=(--project "$project")
+    created=$(remote_create "${create_args[@]}")
+    session=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["session_id"])' <<<"$created")
+    directory=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["workspace"])' <<<"$created")
+  fi
+  tmux_name=agent-$name
+  valid_name "$tmux_name" || { echo "Invalid tmux name: $tmux_name" >&2; return 2; }
+  if ! tmux has-session -t "=$tmux_name" 2>/dev/null; then
+    tmux new-session -d -s "$tmux_name" -c "$directory" "$remote_helper attach --session '$session' --directory '$directory'"
+  fi
+  remember_agent_selection "$model" "$effort"
+  if [[ ${TERM:-} == '' || ${TERM:-} == dumb ]]; then
+    export TERM=xterm-256color
+  fi
+  exec tmux attach-session -t "=$tmux_name"
+}
+
+ensure_layout
+load_defaults
+
+case "${1:-}" in
+  --list)
+    for item in "${models[@]}"; do printf '%-32s %s\n' "$item" "$(label "$item")"; done
+    ;;
+  --status)
+    exec curl -fsS http://127.0.0.1:11434/_profile/status
+    ;;
+  -h|--help)
+    usage
+    ;;
+  run)
+    shift
+    remote_run "$@"
+    ;;
+  remote)
+    shift
+    case "${1:-}" in
+      create) shift; remote_create "$@" ;;
+      run) shift; remote_run "$@" ;;
+      status) shift; remote_status "$@" ;;
+      cancel) shift; remote_cancel "$@" ;;
+      mark) shift; remote_mark "$@" ;;
+      messages) shift; remote_messages "$@" ;;
+      delete) shift; remote_delete "$@" ;;
+      sessions) shift; exec "$remote_helper" sessions "$@" ;;
+      health) shift; exec "$remote_helper" health "$@" ;;
+      *) usage >&2; exit 2 ;;
+    esac
+    ;;
+  '')
+    if [[ -t 0 && -t 1 ]]; then interactive; else usage >&2; exit 2; fi
+    ;;
+  *)
+    echo "Unknown command: $1" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

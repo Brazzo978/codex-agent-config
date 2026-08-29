@@ -8,4 +8,6 @@ Defaults: Spark=microtask only when all required context is tiny and local; reje
 
 Explicit exposed profile wins. Unavailable explicit profile => stop; no substitution. Bound scope; avoid overlapping ownership/redundant retries; primary verifies and synthesizes.
 
+The local OpenCode/Qwen worker is explicit opt-in only. Use or consult it only when the user's current request explicitly asks for local Qwen, local OpenCode, or the local worker by name. A general request for a subagent, a simple task, free/unlimited usage, native quota pressure, or apparent task fit is not authorization. Otherwise route only among native Codex profiles. Its default agent mode may use OpenCode tools and modify the supplied workspace; give it only user-authorized scope and always verify its work.
+
 For every spawn set `task_name=<scope>_<model>_<effort>` using model codes `sp/l/t/s` and effort codes `l/m/h/xh/mx/u`; lowercase and underscores only. Example: `scansione_rete_l_xh`.

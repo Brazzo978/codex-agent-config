@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Route agents with context and fit gates"
-  default_prompt: "Use $route-subagents to match a simple example, enforce Spark's small-context gate, consult the merged catalog only if needed, label and spawn the task, then verify the result."
+  short_description: "Route native agents; local Qwen is opt-in"
+  default_prompt: "Use $route-subagents to choose a native profile. Use the local OpenCode/Qwen worker only when I explicitly request it by name, then pass the required workspace/files/context and verify the result."

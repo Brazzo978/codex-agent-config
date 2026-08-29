@@ -11,3 +11,5 @@ archived_sessions/
 *.sqlite-wal
 *.log
 backups/
+__pycache__/
+*.pyc

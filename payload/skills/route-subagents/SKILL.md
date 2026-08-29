@@ -7,6 +7,14 @@ description: Dynamically choose and spawn the best available Codex custom-agent 
 
 Honor an explicit profile exactly. If unavailable, stop.
 
+## Local OpenCode worker
+
+This lane is explicit opt-in only. Enter this section only when the user's current request explicitly asks for local Qwen, local OpenCode, or the local worker by name. Do not infer permission from a generic request for a subagent, task simplicity, free/unlimited usage, native quota pressure, or apparent task fit. Otherwise do not read the local-worker reference or call its MCP tools; route only among native Codex profiles.
+
+When explicitly requested, read [references/local-worker.md](references/local-worker.md), then call `local_opencode_worker.start_task`. Pass the relevant workspace, explicit file paths, and an effort. Use `low` for deterministic execution with a settled design, `medium` for a single bounded implementation or debugging tranche that needs judgment, and `xhigh` only for exceptional hard or high-risk work; task size alone never justifies `xhigh`. Split broad multi-artifact goals into independently verifiable tranches instead of raising effort. Agent mode is the default and may inspect or modify the workspace, run commands, and use the user's configured OpenCode tools and MCP servers. Retain its `task_id`, inspect it with `get_task`, and use bounded `wait_task` calls until completion. Leave `timeout` omitted for the default run-until-terminal behavior; pass a positive timeout only when the user or task genuinely requires a hard wall-clock limit. Use `cancel_task` when its work is no longer needed. Invoke the bundled script only when MCP is unavailable.
+
+This lane is a tool-backed pseudo-subagent, not a native `spawn_agent` profile. With the `llamacode` backend, the bridge creates or continues a persistent OpenCode session over SSH and runs each prompt in a named remote tmux job; OpenCode, its tools, files, and history live on the remote machine. Retain the returned `session_id` when continuation is useful, inspect compact remote messages through `get_task`/`wait_task`, and retrieve artifacts with `fetch_file`. The legacy `ollama` backend still launches OpenCode locally and sends only inference to Ollama. Give either backend a bounded outcome, the correct project/workspace, explicit files, and only the summarized context that changes execution; do not paste broad history or assume it knows the primary conversation. State known facts and completed checks so it does not rediscover them. Keep final synthesis, verification, acceptance, and escalation in the primary agent.
+
 ## Simple routing examples
 
 Match these before reading the catalog. Do not calculate fitness when an example fits.
@@ -30,7 +38,7 @@ If no example fits, choose the family by the dominant need: clear/repeatable -> 
 
 Spark has a hard context-fit gate: reject it for multi-file context, long documents, broad conversation history, many tool traces, or cross-source synthesis. If the task or required context grows, escalate once to Luna, Terra, or Sol; do not retry the unsuitable Spark lane.
 
-For every spawn:
+For every native Codex spawn:
 
 - Apply Max/Ultra gates from the catalog.
 - Set `task_name=<scope>_<model_code>_<effort_code>`; codes: models `sp/l/t/s`, efforts `l/m/h/xh/mx/u`.

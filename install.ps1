@@ -1,7 +1,17 @@
 [CmdletBinding()]
 param(
     [switch]$Check,
-    [string]$TargetDir
+    [string]$TargetDir,
+    [Alias('LlamaCodeHost')]
+    [string]$OpenCodeHost,
+    [Alias('LlamaCodeProfile')]
+    [string]$OpenCodeModel,
+    [ValidateSet('auto', 'ollama', 'llamacode')]
+    [string]$OpenCodeBackend = 'auto',
+    [string]$LlamaCodeUser = 'root',
+    [string]$LlamaCodeSshKey,
+    [Alias('LlamaCodeRemoteProject')]
+    [string]$LlamaCodeRemoteWorkspace
 )
 
 Set-StrictMode -Version Latest
@@ -154,7 +164,9 @@ if ($agentFiles.Count -ne 19) {
     throw "Expected 19 custom-agent profiles, found $($agentFiles.Count)."
 }
 
-$skillFiles = @(Get-ChildItem -LiteralPath $sourceSkill -File -Recurse | Sort-Object FullName)
+$skillFiles = @(Get-ChildItem -LiteralPath $sourceSkill -File -Recurse |
+    Where-Object { $_.Extension -ne '.pyc' -and $_.FullName -notmatch '[\\/]__pycache__[\\/]' } |
+    Sort-Object FullName)
 if ($skillFiles.Count -lt 3) {
     throw "The route-subagents skill payload is incomplete."
 }
@@ -169,6 +181,63 @@ foreach ($file in $skillFiles) {
     $relativeInsideSkill = $file.FullName.Substring($skillPrefix.Length)
     $relative = "skills\route-subagents\$relativeInsideSkill"
     Install-PayloadFile $file.FullName (Join-Path $codexHome $relative) $relative
+}
+
+if (-not [string]::IsNullOrWhiteSpace($OpenCodeHost)) {
+    $workerConfigRelative = 'opencode-worker.json'
+    $workerConfig = Join-Path $codexHome $workerConfigRelative
+    Assert-SafeDestinationFile $workerConfig
+    $workerOutputLimit = if ($OpenCodeBackend -eq 'llamacode') { 16384 } else { 32768 }
+    $workerSettings = [ordered]@{
+        host = $OpenCodeHost.Trim()
+        backend = $OpenCodeBackend
+        timeout = 0
+        max_context_bytes = 49152
+        effort = 'medium'
+        context_limit = 110592
+        output_limits = [ordered]@{
+            low = $workerOutputLimit
+            medium = $workerOutputLimit
+            xhigh = $workerOutputLimit
+        }
+    }
+    if (-not [string]::IsNullOrWhiteSpace($OpenCodeModel)) {
+        $workerSettings['model'] = $OpenCodeModel.Trim()
+    }
+    if ($OpenCodeBackend -eq 'llamacode') {
+        $workerSettings['ssh_user'] = $LlamaCodeUser.Trim()
+        if (-not [string]::IsNullOrWhiteSpace($LlamaCodeSshKey)) {
+            $workerSettings['ssh_key'] = [IO.Path]::GetFullPath($LlamaCodeSshKey)
+        }
+        $workerSettings['launcher_command'] = 'llamacode'
+        if (-not [string]::IsNullOrWhiteSpace($LlamaCodeRemoteWorkspace)) {
+            $workerSettings['remote_workspace'] = $LlamaCodeRemoteWorkspace
+        }
+    }
+    $desiredWorkerConfig = Normalize-Text ($workerSettings | ConvertTo-Json)
+    $existingWorkerConfig = if (Test-Path -LiteralPath $workerConfig -PathType Leaf) {
+        Normalize-Text ([IO.File]::ReadAllText($workerConfig))
+    } else {
+        ''
+    }
+    if ($existingWorkerConfig -eq $desiredWorkerConfig) {
+        Write-Output "CURRENT  $workerConfigRelative"
+    } elseif ($Check) {
+        Write-Output "DIFF     $workerConfigRelative"
+        $script:Failures++
+    } else {
+        Backup-ExistingFile $workerConfig $workerConfigRelative
+        New-Item -ItemType Directory -Force -Path $codexHome | Out-Null
+        $stagedWorkerConfig = Join-Path $codexHome ('.opencode-worker-' + [guid]::NewGuid().ToString('N') + '.tmp')
+        try {
+            [IO.File]::WriteAllText($stagedWorkerConfig, $desiredWorkerConfig + "`n", $utf8NoBom)
+            Move-Item -LiteralPath $stagedWorkerConfig -Destination $workerConfig -Force
+        } finally {
+            if (Test-Path -LiteralPath $stagedWorkerConfig) { Remove-Item -LiteralPath $stagedWorkerConfig -Force }
+        }
+        Write-Output "INSTALLED $workerConfigRelative"
+        $script:Changed++
+    }
 }
 
 $legacyRoutingExamplesRelative = 'skills\route-subagents\references\routing-examples.md'
@@ -237,6 +306,12 @@ if (-not $Check) {
     if (Test-Path -LiteralPath $legacyRoutingExamples) {
         throw "Final verification failed: obsolete routing-examples.md remains installed."
     }
+    if (-not [string]::IsNullOrWhiteSpace($OpenCodeHost)) {
+        $installedWorkerConfig = Normalize-Text ([IO.File]::ReadAllText((Join-Path $codexHome 'opencode-worker.json')))
+        if ($installedWorkerConfig -ne $desiredWorkerConfig) {
+            throw "Final verification failed for opencode-worker.json"
+        }
+    }
     $installedAgentsText = Normalize-Text ([IO.File]::ReadAllText($globalAgents))
     $installedMatches = [regex]::Matches($installedAgentsText, $pattern)
     if ($installedMatches.Count -ne 1 -or (Normalize-Text $installedMatches[0].Value) -ne $managedBlock) {
@@ -255,4 +330,37 @@ if ($Check) {
     Write-Output "INSTALL PASSED: $($script:Changed) managed item(s) updated in $codexHome"
     if ($null -ne $script:BackupRoot) { Write-Output "BACKUP: $script:BackupRoot" }
     Write-Output 'Restart Codex and start a new task to load the custom-agent types.'
+}
+
+if (-not [string]::IsNullOrWhiteSpace($OpenCodeHost)) {
+    $python = Get-Command python -ErrorAction SilentlyContinue
+    if ($null -eq $python) {
+        throw 'Python is required for the OpenCode worker but was not found in PATH.'
+    }
+    & $python.Source (Join-Path $codexHome 'skills\route-subagents\scripts\opencode_worker.py') --config (Join-Path $codexHome 'opencode-worker.json') --healthcheck
+    if ($LASTEXITCODE -ne 0) {
+        throw 'OpenCode worker health check failed.'
+    }
+
+    if (-not $Check) {
+        $codex = Get-Command codex -ErrorAction SilentlyContinue
+        if ($null -eq $codex) {
+            throw 'Codex CLI is required to register the local OpenCode MCP server.'
+        }
+        $configToml = Join-Path $codexHome 'config.toml'
+        Backup-ExistingFile $configToml 'config.toml'
+        $previousCodexHome = $env:CODEX_HOME
+        try {
+            $env:CODEX_HOME = $codexHome
+            & $codex.Source mcp remove local_opencode_worker 2>$null
+            & $codex.Source mcp add local_opencode_worker -- $python.Source (Join-Path $codexHome 'skills\route-subagents\scripts\opencode_mcp.py')
+            if ($LASTEXITCODE -ne 0) { throw 'Could not register the local OpenCode MCP server.' }
+            & $codex.Source mcp get local_opencode_worker --json | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw 'OpenCode MCP registration verification failed.' }
+            Write-Output 'REGISTERED local_opencode_worker MCP server'
+            if ($null -ne $script:BackupRoot) { Write-Output "BACKUP: $script:BackupRoot" }
+        } finally {
+            $env:CODEX_HOME = $previousCodexHome
+        }
+    }
 }
