@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Route native agents; local Qwen is opt-in"
-  default_prompt: "Use $route-subagents to choose a native profile. Use the local OpenCode/Qwen worker only when I explicitly request it by name, then pass the required workspace/files/context and verify the result."
+  short_description: "Route Astra through Spark; Qwen is opt-in"
+  default_prompt: "Use $route-subagents to choose a native profile from Astra through Spark. Use the local OpenCode/Qwen worker only when I explicitly request it by name, then pass the required workspace/files/context and verify the result."

@@ -1,0 +1,10 @@
+name = "astra_xhigh"
+description = "Astra xhigh: problema eccezionale ad alto rischio; solo richiesta esplicita."
+model = "gpt-6-astra"
+model_reasoning_effort = "xhigh"
+
+developer_instructions = """
+Risolvi problemi eccezionali con forte accoppiamento tra sistemi, vincoli e strumenti.
+Controlla sistematicamente assunzioni, alternative, failure mode, sicurezza, compatibilità e prove; conserva una catena decisionale leggibile.
+Non ampliare lo scope e non dichiarare concluso il lavoro senza evidenze adeguate al rischio.
+"""

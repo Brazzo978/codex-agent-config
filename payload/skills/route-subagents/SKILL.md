@@ -17,7 +17,7 @@ This lane is a tool-backed pseudo-subagent, not a native `spawn_agent` profile. 
 
 ## Simple routing examples
 
-Match these before reading the catalog. Do not calculate fitness when an example fits.
+Match these first to establish workload, baseline profile, and minimum intelligence. Then apply the catalog's cost optimization even when an example fits.
 
 - One command, syntax answer, tiny obvious fix, or narrow lookup with all required context already small and local -> `spark_medium`.
 - Purely mechanical extraction, classification, formatting, or identical repetition with no judgment -> `luna_low`.
@@ -33,14 +33,16 @@ Match these before reading the catalog. Do not calculate fitness when an example
 - Difficult Sol-shaped work with multiple tradeoffs -> `sol_high`.
 - Exceptional cross-system or high-risk Sol-shaped work -> `sol_xhigh`.
 - Ultra-complex indivisible Sol work -> ask before `sol_max`. Use `sol_ultra` only when explicitly requested.
+- A hardest end-to-end workflow whose capability need reaches roughly `sol_max`, especially across systems, tools, or disciplines -> `astra_low` only when Sol is insufficient or Astra's fit matters.
+- Escalate Astra to `medium` only when Low lacks depth. `astra_high`, `astra_xhigh`, `astra_max`, and `astra_ultra` require an explicit user request.
 
-If no example fits, choose the family by the dominant need: clear/repeatable -> Luna; repository/tools -> Terra; ambiguity/judgment -> Sol. Then load `references/model-catalog.md` and use its route table. Use fitness math only for cross-family fallback or audit.
+If no example fits, choose the family by the dominant need: clear/repeatable -> Luna; repository/tools -> Terra; ambiguity/judgment -> Sol; hardest end-to-end work near Sol Max capability -> Astra Low. Then load `references/model-catalog.md` and use its route table. For every scored implicit profile, treat the baseline Intelligence Index as a floor: exclude incompatible, under-floor, or gated profiles; retain the highest workload-fit tier; then choose its lowest published task cost, using intelligence only as a tie-breaker. If the best-fit baseline cost is unpublished, preserve it instead of estimating. Never trade away natural task fit merely to reduce benchmark cost. Spark, Ultra, and explicitly named profiles bypass numeric optimization and remain exact.
 
 Spark has a hard context-fit gate: reject it for multi-file context, long documents, broad conversation history, many tool traces, or cross-source synthesis. If the task or required context grows, escalate once to Luna, Terra, or Sol; do not retry the unsuitable Spark lane.
 
 For every native Codex spawn:
 
 - Apply Max/Ultra gates from the catalog.
-- Set `task_name=<scope>_<model_code>_<effort_code>`; codes: models `sp/l/t/s`, efforts `l/m/h/xh/mx/u`.
+- Set `task_name=<scope>_<model_code>_<effort_code>`; codes: models `sp/l/t/s/a`, efforts `l/m/h/xh/mx/u`.
 - Spawn the minimum bounded lanes; avoid overlapping ownership and redundant retries.
 - Keep synthesis, verification, acceptance, and escalation in the primary agent.

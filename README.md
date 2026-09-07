@@ -2,7 +2,7 @@
 
 Private, portable configuration for the Codex desktop app and CLI. It installs:
 
-- 19 custom-agent profiles: GPT-5.6 Sol, Terra, and Luna across six effort levels, plus GPT-5.3 Codex Spark / Medium;
+- 25 custom-agent profiles: GPT-6 Astra plus GPT-5.6 Sol, Terra, and Luna across six effort levels, plus GPT-5.3 Codex Spark / Medium;
 - the `route-subagents` personal skill with task-fit, cost-performance, quota, escalation, and fallback rules;
 - an optional OpenCode/Qwen worker that can run either through local OpenCode + Ollama or through persistent remote LlamaCode/OpenCode sessions over SSH;
 - a managed routing block in the user's global `AGENTS.md`.
@@ -103,7 +103,7 @@ Restart the Codex desktop app and start a new task after installation or update.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
 
-The router presents plain-language standard examples first, then one merged catalog with the precomputed workload/difficulty table; the fitness vector is only for cross-family fallback or audit. Spark is eligible only when the complete relevant context is small and local, not for multi-file repositories, long documents, broad history, tool-heavy work, or cross-source synthesis. Luna defaults to Max unless positively simple; Terra defaults to High and may use Max for complex execution; Sol defaults to Medium, while Sol Max is confirmation-gated and Sol Ultra is explicit-request-only. Spawned task names append compact model/effort codes such as `scansione_rete_l_xh`.
+The router presents plain-language standard examples first, then one merged catalog with the precomputed workload/difficulty table. For scored implicit profiles, the example or table profile establishes the minimum intelligence floor, after which cost optimization always runs without reducing task suitability. Its dated Artificial Analysis v4.2 data uses Intelligence Index and weighted-average USD per Index task; unpublished costs remain null and are never estimated. After incompatible, under-floor, and gated profiles are excluded, the router retains the highest workload-fit tier and chooses its lowest published task cost; intelligence breaks cost ties. Spark, Ultra, and explicitly named profiles remain exact because numeric comparison is unavailable or would violate the request. Spark is eligible only when the complete relevant context is small and local, not for multi-file repositories, long documents, broad history, tool-heavy work, or cross-source synthesis. Luna defaults to Max unless positively simple; Terra defaults to High and may use Max for complex execution; Sol defaults to Medium. Astra starts at Low (`I=49`, close to Sol Max at `I=51`) only for the hardest end-to-end work where Sol is insufficient or Astra's fit matters. Astra Medium is the implicit ceiling; High, XHigh, Max, and Ultra are explicit-request-only. Spawned task names append compact model/effort codes such as `audit_cross_system_a_xh`.
 
 ## Ask Codex to install it
 

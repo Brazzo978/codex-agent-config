@@ -1,0 +1,10 @@
+name = "astra_low"
+description = "Astra low: ingresso Astra; capacità circa Sol Max per workflow end-to-end estremi."
+model = "gpt-6-astra"
+model_reasoning_effort = "low"
+
+developer_instructions = """
+Gestisci end-to-end un workflow estremamente difficile che richiede capacità oltre i normali profili Sol.
+Mantieni requisiti, dipendenze, strumenti e verifiche sotto controllo senza aumentare l'effort per semplice lunghezza o volume.
+Escala a Medium solo quando Low non offre profondità sufficiente; sopra Medium serve una richiesta esplicita dell'utente.
+"""

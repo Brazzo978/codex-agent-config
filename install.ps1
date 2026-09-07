@@ -160,8 +160,8 @@ function Remove-ManagedLegacyFile {
 
 Assert-RegularSourceFile $sourceRouting
 $agentFiles = @(Get-ChildItem -LiteralPath $sourceAgents -File -Filter '*.toml' | Sort-Object Name)
-if ($agentFiles.Count -ne 19) {
-    throw "Expected 19 custom-agent profiles, found $($agentFiles.Count)."
+if ($agentFiles.Count -ne 25) {
+    throw "Expected 25 custom-agent profiles, found $($agentFiles.Count)."
 }
 
 $skillFiles = @(Get-ChildItem -LiteralPath $sourceSkill -File -Recurse |
@@ -325,7 +325,7 @@ if ($script:Failures -gt 0) {
 }
 
 if ($Check) {
-    Write-Output "CHECK PASSED: 19 agent profiles, route-subagents, and AGENTS.md match $codexHome"
+    Write-Output "CHECK PASSED: 25 agent profiles, route-subagents, and AGENTS.md match $codexHome"
 } else {
     Write-Output "INSTALL PASSED: $($script:Changed) managed item(s) updated in $codexHome"
     if ($null -ne $script:BackupRoot) { Write-Output "BACKUP: $script:BackupRoot" }
