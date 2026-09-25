@@ -1,6 +1,6 @@
 name = "luna_max"
 description = "Luna max: default Luna; massima profondità su lavoro chiaro/circoscritto; cambia famiglia se cresce l'ambiguità."
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "max"
 
 developer_instructions = """

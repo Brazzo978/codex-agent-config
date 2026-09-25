@@ -160,8 +160,8 @@ function Remove-ManagedLegacyFile {
 
 Assert-RegularSourceFile $sourceRouting
 $agentFiles = @(Get-ChildItem -LiteralPath $sourceAgents -File -Filter '*.toml' | Sort-Object Name)
-if ($agentFiles.Count -ne 25) {
-    throw "Expected 25 custom-agent profiles, found $($agentFiles.Count)."
+if ($agentFiles.Count -ne 18) {
+    throw "Expected 18 custom-agent profiles, found $($agentFiles.Count)."
 }
 
 $skillFiles = @(Get-ChildItem -LiteralPath $sourceSkill -File -Recurse |
@@ -171,6 +171,20 @@ if ($skillFiles.Count -lt 3) {
     throw "The route-subagents skill payload is incomplete."
 }
 
+$obsoleteAgentNames = @(
+    'spark-medium.toml',
+    'terra-low.toml',
+    'terra-medium.toml',
+    'terra-high.toml',
+    'terra-xhigh.toml',
+    'terra-max.toml',
+    'terra-ultra.toml'
+)
+
+foreach ($name in $obsoleteAgentNames) {
+    $relative = "agents\$name"
+    Remove-ManagedLegacyFile (Join-Path $codexHome $relative) $relative
+}
 foreach ($file in $agentFiles) {
     Install-PayloadFile $file.FullName (Join-Path $codexHome "agents\$($file.Name)") "agents\$($file.Name)"
 }
@@ -303,6 +317,11 @@ if (-not $Check) {
             throw "Final verification failed for skill file: $relativeInsideSkill"
         }
     }
+    foreach ($name in $obsoleteAgentNames) {
+        if (Test-Path -LiteralPath (Join-Path $codexHome "agents\$name")) {
+            throw "Final verification failed: obsolete agent profile remains: $name"
+        }
+    }
     if (Test-Path -LiteralPath $legacyRoutingExamples) {
         throw "Final verification failed: obsolete routing-examples.md remains installed."
     }
@@ -325,7 +344,7 @@ if ($script:Failures -gt 0) {
 }
 
 if ($Check) {
-    Write-Output "CHECK PASSED: 25 agent profiles, route-subagents, and AGENTS.md match $codexHome"
+    Write-Output "CHECK PASSED: 18 agent profiles, route-subagents, and AGENTS.md match $codexHome"
 } else {
     Write-Output "INSTALL PASSED: $($script:Changed) managed item(s) updated in $codexHome"
     if ($null -ne $script:BackupRoot) { Write-Output "BACKUP: $script:BackupRoot" }

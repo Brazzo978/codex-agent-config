@@ -1,6 +1,6 @@
 name = "luna_medium"
 description = "Luna medium: task chiaro/ripetibile con controlli; no architettura o indagine aperta."
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "medium"
 
 developer_instructions = """
