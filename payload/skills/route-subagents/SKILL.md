@@ -1,11 +1,11 @@
 ---
 name: route-subagents
-description: Dynamically choose and spawn the best available Codex custom-agent model and reasoning profile. Use for every explicit agent, subagent, parallel-work, model, or effort request, and whenever delegation would materially improve speed, quality, context isolation, independent verification, or long-task reliability.
+description: Choose a GPT-6 Luna, Sol, or Astra custom-agent profile for explicit agent/model/effort requests or useful delegation.
 ---
 
 # Route Subagents
 
-Honor an explicit profile exactly. If unavailable, stop.
+Route only when the user explicitly requests an agent or delegation would materially improve speed, quality, context isolation, independent verification, or reliability. Honor an explicitly named exposed profile exactly. If it is unavailable, stop rather than substituting another model or effort.
 
 ## Local OpenCode worker
 
@@ -15,34 +15,29 @@ When explicitly requested, read [references/local-worker.md](references/local-wo
 
 This lane is a tool-backed pseudo-subagent, not a native `spawn_agent` profile. With the `llamacode` backend, the bridge creates or continues a persistent OpenCode session over SSH and runs each prompt in a named remote tmux job; OpenCode, its tools, files, and history live on the remote machine. Retain the returned `session_id` when continuation is useful, inspect compact remote messages through `get_task`/`wait_task`, and retrieve artifacts with `fetch_file`. The legacy `ollama` backend still launches OpenCode locally and sends only inference to Ollama. Give either backend a bounded outcome, the correct project/workspace, explicit files, and only the summarized context that changes execution; do not paste broad history or assume it knows the primary conversation. State known facts and completed checks so it does not rediscover them. Keep final synthesis, verification, acceptance, and escalation in the primary agent.
 
-## Simple routing examples
+## Native route
 
-Match these first to establish workload, baseline profile, and minimum intelligence. Then apply the catalog's cost optimization even when an example fits.
+Match the examples first. They set the workload family and the minimum capability. Then use [references/model-catalog.md](references/model-catalog.md) to select the lowest benchmark cost among compatible, available, ungated profiles that meet the capability floor and have the highest task-fit tier. Prefer the model family that naturally fits the task. The published USD costs are benchmark API costs, not Codex quota or credit values. Do not raise effort for document length, item count, or repetitive volume alone.
 
-- One command, syntax answer, tiny obvious fix, or narrow lookup with all required context already small and local -> `spark_medium`.
-- Purely mechanical extraction, classification, formatting, or identical repetition with no judgment -> `luna_low`.
-- Clear repeatable transformation or structured summary requiring a few checks -> `luna_medium`.
-- A simple ten-page description, summary, translation, or rewrite with clear instructions -> `luna_medium`. Length alone does not require Terra or Sol.
-- A bounded deterministic task with important but familiar edge cases -> `luna_high`.
-- An unusually hard but still bounded deterministic task -> `luna_xhigh`.
-- A Luna-shaped task not positively classified as simple -> `luna_max`.
-- Normal multi-file repository work, implementation, tests, review, or debugging with a settled objective -> `terra_high`.
-- Subtle or high-risk execution with a settled design -> `terra_xhigh`.
-- Complex implementation or investigation with settled architecture -> `terra_max`.
-- Architecture, strategy, unresolved ambiguity, consequential judgment, or polished synthesis -> `sol_medium`.
-- Difficult Sol-shaped work with multiple tradeoffs -> `sol_high`.
-- Exceptional cross-system or high-risk Sol-shaped work -> `sol_xhigh`.
-- Ultra-complex indivisible Sol work -> ask before `sol_max`. Use `sol_ultra` only when explicitly requested.
-- A hardest end-to-end workflow whose capability need reaches roughly `sol_max`, especially across systems, tools, or disciplines -> `astra_low` only when Sol is insufficient or Astra's fit matters.
-- Escalate Astra to `medium` only when Low lacks depth. `astra_high`, `astra_xhigh`, `astra_max`, and `astra_ultra` require an explicit user request.
+- Mechanical extraction, formatting, or identical repetition without judgment -> `luna_low`.
+- Clear repeatable transformation, summary, translation, or rewrite -> `luna_medium`.
+- Bounded deterministic work with familiar edge cases -> `luna_high`.
+- Hard bounded deterministic work -> `luna_xhigh`.
+- Demanding Luna-shaped work or uncertain but bounded edge cases -> `luna_max`.
+- Small repository lookup or modest code judgment -> `sol_low`.
+- Normal multi-file implementation, tests, review, debugging, architecture, or synthesis -> `sol_medium`.
+- Difficult Sol-shaped work with multiple tradeoffs or plausible causes -> `sol_high`.
+- Exceptional high-risk or cross-system Sol-shaped work -> `sol_xhigh`.
+- Indivisible extreme Sol work that demonstrably needs more capability -> `sol_max`.
+- A hardest end-to-end workflow where normal Sol routing is insufficient or Astra's cross-system fit is essential -> `astra_low`.
+- Escalate Astra to `medium` only if Low is insufficient for the task.
 
-If no example fits, choose the family by the dominant need: clear/repeatable -> Luna; repository/tools -> Terra; ambiguity/judgment -> Sol; hardest end-to-end work near Sol Max capability -> Astra Low. Then load `references/model-catalog.md` and use its route table. For every scored implicit profile, treat the baseline Intelligence Index as a floor: exclude incompatible, under-floor, or gated profiles; retain the highest workload-fit tier; then choose its lowest published task cost, using intelligence only as a tie-breaker. If the best-fit baseline cost is unpublished, preserve it instead of estimating. Never trade away natural task fit merely to reduce benchmark cost. Spark, Ultra, and explicitly named profiles bypass numeric optimization and remain exact.
+Luna, Sol, and Astra Ultra require an explicit user request. Astra High, XHigh, and Max also require an explicit request. Keep Luna Max available for bounded tasks that need it. Start Astra at Low; do not select a more expensive Astra effort without a concrete capability reason. Luna XHigh scores 34 in the supplied benchmark, equal to Sol Low; Sol XHigh scores 44. Do not treat same effort labels across model families as equivalent capability.
 
-Spark has a hard context-fit gate: reject it for multi-file context, long documents, broad conversation history, many tool traces, or cross-source synthesis. If the task or required context grows, escalate once to Luna, Terra, or Sol; do not retry the unsuitable Spark lane.
+If no example fits, choose Luna for clear and repeatable tasks, Sol for repository work or consequential judgment, and Astra for the hardest end-to-end workflows. Use the route table in the catalog. Explicit model and effort requests bypass cost optimization.
 
 For every native Codex spawn:
 
-- Apply Max/Ultra gates from the catalog.
-- Set `task_name=<scope>_<model_code>_<effort_code>`; codes: models `sp/l/t/s/a`, efforts `l/m/h/xh/mx/u`.
-- Spawn the minimum bounded lanes; avoid overlapping ownership and redundant retries.
+- Set `task_name=<scope>_<model_code>_<effort_code>`; model codes `l/s/a`, effort codes `l/m/h/xh/mx/u`.
+- Spawn the minimum number of bounded lanes; avoid overlapping ownership and redundant retries.
 - Keep synthesis, verification, acceptance, and escalation in the primary agent.

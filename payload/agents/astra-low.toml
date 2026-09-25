@@ -1,5 +1,5 @@
 name = "astra_low"
-description = "Astra low: ingresso Astra; capacità circa Sol Max per workflow end-to-end estremi."
+description = "Astra low: primo livello Astra per workflow end-to-end eccezionali; escalation solo se necessaria."
 model = "gpt-6-astra"
 model_reasoning_effort = "low"
 

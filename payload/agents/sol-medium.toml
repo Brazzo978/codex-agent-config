@@ -1,6 +1,6 @@
 name = "sol_medium"
 description = "Sol medium: default Sol; architettura, pianificazione, sintesi, ambiguità moderata."
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
 
 developer_instructions = """
