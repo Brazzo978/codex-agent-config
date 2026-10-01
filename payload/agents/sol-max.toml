@@ -1,6 +1,6 @@
 name = "sol_max"
 description = "Sol max: solo per problemi estremi indivisibili con necessità dimostrata."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "max"
 
 developer_instructions = """

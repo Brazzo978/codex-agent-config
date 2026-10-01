@@ -1,6 +1,6 @@
 name = "sol_high"
 description = "Sol high: architettura/debug/ricerca/review difficili con tradeoff e verifica."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 
 developer_instructions = """

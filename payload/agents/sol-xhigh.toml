@@ -1,6 +1,6 @@
 name = "sol_xhigh"
 description = "Sol xhigh: contesto ampio, alto rischio, forte ambiguità, ragionamento cross-system."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "xhigh"
 
 developer_instructions = """

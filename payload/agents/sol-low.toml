@@ -1,6 +1,6 @@
 name = "sol_low"
 description = "Sol low: task piccolo con giudizio/polish; no lavoro meccanico ad alto volume."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "low"
 
 developer_instructions = """

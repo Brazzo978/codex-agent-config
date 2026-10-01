@@ -4,7 +4,7 @@
 version: 2026-09-25
 benchmark: Artificial Analysis Intelligence Index v4.3.2
 external_lookup: false
-models: [gpt-6-luna, gpt-6-sol, gpt-6-astra]
+models: [gpt-6-luna, gpt-6.1-sol, gpt-6-astra]
 families: [luna, sol, astra]
 
 # I = Intelligence Index. C = weighted-average USD per Intelligence Index task.
@@ -15,11 +15,11 @@ profiles:
   luna_high:    {model: gpt-6-luna,  effort: high,   I: 32, C: 0.03}
   luna_xhigh:   {model: gpt-6-luna,  effort: xhigh,  I: 34, C: 0.04}
   luna_max:     {model: gpt-6-luna,  effort: max,    I: 37, C: 0.07}
-  sol_low:      {model: gpt-6-sol,   effort: low,    I: 34, C: 0.13}
-  sol_medium:   {model: gpt-6-sol,   effort: medium, I: 40, C: 0.25}
-  sol_high:     {model: gpt-6-sol,   effort: high,   I: 43, C: 0.37}
-  sol_xhigh:    {model: gpt-6-sol,   effort: xhigh,  I: 44, C: 0.53}
-  sol_max:      {model: gpt-6-sol,   effort: max,    I: 48, C: 1.06}
+  sol_low:      {model: gpt-6.1-sol, effort: low,    I: 34, C: 0.13}
+  sol_medium:   {model: gpt-6.1-sol, effort: medium, I: 40, C: 0.25}
+  sol_high:     {model: gpt-6.1-sol, effort: high,   I: 43, C: 0.37}
+  sol_xhigh:    {model: gpt-6.1-sol, effort: xhigh,  I: 44, C: 0.53}
+  sol_max:      {model: gpt-6.1-sol, effort: max,    I: 48, C: 1.06}
   astra_low:    {model: gpt-6-astra, effort: low,    I: 46, C: 0.82}
   astra_medium: {model: gpt-6-astra, effort: medium, I: 50, C: 1.54}
   astra_high:   {model: gpt-6-astra, effort: high,   I: 51, C: 1.73}
