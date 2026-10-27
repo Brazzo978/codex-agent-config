@@ -2,7 +2,7 @@
 
 Private, portable configuration for the Codex desktop app and CLI. It installs:
 
-- 24 custom-agent profiles: GPT-6 Luna, GPT-6.1 Terra, GPT-6.1 Sol, and explicit-only GPT-6 Astra across six effort levels;
+- 24 custom-agent profiles: GPT-6 Luna, GPT-6.1 Terra, GPT-6.1 Sol, and GPT-6 Astra across six effort levels;
 - the `route-subagents` personal skill with task-fit, cost-performance, quota, escalation, and fallback rules;
 - an optional OpenCode/Qwen worker that can run either through local OpenCode + Ollama or through persistent remote LlamaCode/OpenCode sessions over SSH;
 - a managed routing block in the user's global `AGENTS.md`.
@@ -105,7 +105,9 @@ If an explicitly requested model or effort is unavailable to the current account
 
 The router uses the user's Artificial Analysis v4.3.2 charts dated 27 October 2026, with current scores and task costs for GPT-6 Luna, GPT-6.1 Terra, and GPT-6.1 Sol. The account preference is free Luna and a Terra tariff equal to half Sol's for the same usage. Luna covers bounded work, Terra covers normal repository execution, and Sol handles higher capability requirements. The numeric catalog is stored in one JSON file; the bundled resolver preserves capability floors and applies task fit, availability, and explicit-only gates before cost selection.
 
-For paid candidates the router compares full benchmark task costs as a proxy, because more tokens can offset a lower tariff. For example, Terra Max and Sol Medium both score 48, but the supplied costs are $0.40 and $0.21 per benchmark task, so Sol Medium wins when both fit. Terra High scores 44 at $0.13, ahead of Sol Low's 42 at the same measured cost. These figures are not a Codex quota forecast. All Ultra profiles and all Astra profiles require an explicit request. Sol Max needs a demonstrated indivisible extreme need.
+For paid candidates the router compares full benchmark task costs as a proxy, because more tokens can offset a lower tariff. For example, Terra Max and Sol Medium both score 48, but the supplied costs are $0.40 and $0.21 per benchmark task, so Sol Medium wins when both fit. Terra High scores 44 at $0.13, ahead of Sol Low's 42 at the same measured cost. These figures are not a Codex quota forecast. Astra Low/Medium are available for exceptionally difficult specialized workflows and brief advisor questions. Higher Astra profiles and all Ultra profiles require an explicit request. Sol Max needs a demonstrated indivisible extreme need.
+
+Advisor mode is optional and independent of the executor's model. Use it when focused attempts are failing to resolve a concrete bug, unexplained behavior, or difficult GUI/design blocker, or when the user directly requests a second opinion. It is not a routine response to every uncertainty or planning step. Sol is the usual advisor; Astra Low/Medium are available when the question justifies their specialized fit. The advisor provides a short opinion without implementing, editing files, or spawning more agents; the primary owns the decision.
 
 The installer replaces older Luna/Sol/Terra profiles under the same managed filenames with backups, removes the obsolete managed Spark file, and preserves unrelated agents and AGENTS.md content outside the managed block.
 
@@ -114,6 +116,7 @@ Check routing decisions without making model calls:
 ```sh
 python payload/skills/route-subagents/scripts/select_profile.py --workload execution --difficulty normal
 python payload/skills/route-subagents/scripts/select_profile.py --workload execution --difficulty complex
+python payload/skills/route-subagents/scripts/select_profile.py --mode advisor --stalled-on "Both attempted navigation layouts still fail the usability constraint" --consult-reason "Which constraint should I reconsider?"
 python -m unittest discover -s payload/skills/route-subagents/tests -p test_route_catalog.py
 ```
 

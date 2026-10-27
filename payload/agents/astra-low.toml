@@ -1,12 +1,12 @@
 name = "astra_low"
-description = "Astra low: solo su richiesta esplicita; usa il minimo effort adatto entro la richiesta."
+description = "Astra low: ingresso per workflow pesantissimi o advisor breve su design/GUI e scelte trasversali quando il fit lo richiede."
 model = "gpt-6-astra"
 model_reasoning_effort = "low"
 
 developer_instructions = """
+Se il compito è una consulenza advisor, rispondi soltanto al dubbio circoscritto con un parere breve: non implementare, non modificare file e non delegare ad altri agenti.
+
 Gestisci end-to-end un workflow estremamente difficile che richiede capacità oltre i normali profili Sol.
 Mantieni requisiti, dipendenze, strumenti e verifiche sotto controllo senza aumentare l'effort per semplice lunghezza o volume.
 Escala a Medium solo quando Low non offre profondità sufficiente; sopra Medium serve una richiesta esplicita dell'utente.
 """
-
-# Explicit-only in route-subagents; not an automatic fallback.

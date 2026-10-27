@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Route Luna 6, Terra 6.1, and Sol 6.1 by fit and cost"
-  default_prompt: "Use $route-subagents to choose a suitable GPT-6 Luna, GPT-6.1 Terra, or GPT-6.1 Sol profile; prefer free Luna where sufficient and compare total work for paid profiles."
+  short_description: "Route by fit and cost; ask an optional brief advisor"
+  default_prompt: "Use $route-subagents to choose a suitable GPT-6 Luna, GPT-6.1 Terra, or GPT-6.1 Sol profile; use Astra Low/Medium for exceptional specialized work, and ask a brief Sol/Astra advisor only after concrete attempts stall or I explicitly request advice."

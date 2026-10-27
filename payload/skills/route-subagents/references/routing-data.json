@@ -182,7 +182,7 @@
       "effort": "low",
       "intelligence_index": 46,
       "benchmark_cost_usd": 0.82,
-      "explicit_only": true,
+      "explicit_only": false,
       "requires_indivisible_extreme": false
     },
     "astra_medium": {
@@ -191,7 +191,7 @@
       "effort": "medium",
       "intelligence_index": 50,
       "benchmark_cost_usd": 1.54,
-      "explicit_only": true,
+      "explicit_only": false,
       "requires_indivisible_extreme": false
     },
     "astra_high": {
@@ -255,6 +255,23 @@
       "exceptional": "sol_xhigh",
       "extreme": "sol_max",
       "default": "sol_medium"
+    },
+    "heavy": {
+      "entry": "astra_low",
+      "deep": "astra_medium",
+      "default": "astra_low"
+    },
+    "advisor": {
+      "narrow": "sol_low",
+      "normal": "sol_medium",
+      "difficult": "sol_high",
+      "exceptional": "sol_xhigh",
+      "default": "sol_medium"
+    },
+    "advisor_heavy": {
+      "entry": "astra_low",
+      "deep": "astra_medium",
+      "default": "astra_low"
     }
   },
   "fit": {
@@ -275,6 +292,24 @@
       "terra": 2,
       "sol": 2,
       "astra": 0
+    },
+    "heavy": {
+      "luna": 0,
+      "terra": 0,
+      "sol": 1,
+      "astra": 2
+    },
+    "advisor": {
+      "luna": 0,
+      "terra": 0,
+      "sol": 2,
+      "astra": 0
+    },
+    "advisor_heavy": {
+      "luna": 0,
+      "terra": 0,
+      "sol": 1,
+      "astra": 2
     }
   },
   "selection_order": [
@@ -294,5 +329,35 @@
     "max",
     "ultra"
   ],
-  "expected_agent_count": 24
+  "expected_agent_count": 24,
+  "advisor": {
+    "optional": true,
+    "require_concrete_consultation_reason": true,
+    "ordinary_executor_automatically_consults": false,
+    "astra_implicit_ceiling": "medium",
+    "contract": {
+      "role": "Independent advisor for one scoped decision; the primary owns execution and verification.",
+      "default_max_words": 250,
+      "honor_user_requested_detail": true,
+      "output": [
+        "recommendation",
+        "strongest reason",
+        "main tradeoff or risk",
+        "next useful check"
+      ],
+      "may_edit_files": false,
+      "may_spawn_agents": false,
+      "read_only_inspection": "Only when needed and within the supplied scope.",
+      "followups": "Only for a material new fact or unresolved contradiction; no routine panel or recursive consultation.",
+      "input_required": [
+        "one concrete question",
+        "relevant constraints",
+        "what failed or did not converge",
+        "attempted fixes and evidence"
+      ]
+    },
+    "require_observed_stall_for_automatic_consultation": true,
+    "explicit_user_can_request_without_stall": true,
+    "trigger": "Observed failure or non-convergence after focused work; not every uncertainty, GUI task, planning step, or thought."
+  }
 }

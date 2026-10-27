@@ -73,6 +73,55 @@ class RouteTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.choose(requested_model="gpt-5.6-terra")
 
+    def test_heavy_specialized_workflows_use_astra_low_then_medium(self):
+        self.assertEqual(self.choose(workload="heavy"), "astra_low")
+        self.assertEqual(self.choose(workload="heavy", difficulty="deep"), "astra_medium")
+        self.assertEqual(self.choose(workload="heavy", minimum_index=48), "astra_medium")
+        self.assertEqual(self.choose(workload="heavy", minimum_index=51), "sol_xhigh")
+        # Naming Astra alone does not unlock High/XHigh/Max.
+        with self.assertRaises(ValueError):
+            self.choose(requested_model="gpt-6-astra", minimum_index=51)
+        self.assertEqual(self.choose(explicit="astra_high"), "astra_high")
+
+    def test_execution_does_not_request_an_advisor(self):
+        selected = router.resolve(DATA, workload="execution")
+        self.assertEqual(selected["mode"], "execute")
+        self.assertNotIn("advisor_contract", selected)
+
+    def test_automatic_advice_requires_an_actual_stall(self):
+        with self.assertRaises(ValueError):
+            self.choose(mode="advisor", consult_reason="I am uncertain about the layout")
+        with self.assertRaises(ValueError):
+            self.choose(mode="advisor", consult_reason="Choose a design", stalled_on=" ")
+        with self.assertRaises(ValueError):
+            self.choose(mode="advisor", stalled_on="The same failure remains after focused fixes")
+        with self.assertRaises(ValueError):
+            self.choose(workload="advisor")
+
+    def test_stalled_advisor_is_bounded_and_uses_sol_by_default(self):
+        kwargs = dict(mode="advisor", consult_reason="What cause should I check next?",
+                      stalled_on="The bug persists after both plausible fixes; logs contradict the hypothesis.")
+        self.assertEqual(self.choose(**kwargs), "sol_medium")
+        self.assertEqual(self.choose(**kwargs, difficulty="narrow"), "sol_low")
+        selected = router.resolve(DATA, **kwargs)
+        self.assertFalse(selected["advisor_contract"]["may_edit_files"])
+        self.assertFalse(selected["advisor_contract"]["may_spawn_agents"])
+        self.assertEqual(selected["advisor_contract"]["default_max_words"], 250)
+        self.assertIn("bug persists", selected["stalled_on"])
+
+    def test_heavy_stalled_advisor_uses_minimum_sufficient_astra(self):
+        kwargs = dict(mode="advisor", advisor_fit="heavy",
+                      consult_reason="How can this interaction satisfy the conflicting constraints?",
+                      stalled_on="Both concrete GUI approaches failed keyboard navigation and layout constraints.")
+        self.assertEqual(self.choose(**kwargs), "astra_low")
+        self.assertEqual(self.choose(**kwargs, difficulty="deep"), "astra_medium")
+        self.assertEqual(self.choose(**kwargs, minimum_index=51), "sol_xhigh")
+
+    def test_direct_user_advice_request_can_precede_a_stall(self):
+        self.assertEqual(self.choose(mode="advisor", advisor_requested=True,
+                                     consult_reason="The user explicitly requested a second opinion"), "sol_medium")
+
+
     def test_payload_matches_numeric_catalog(self):
         agents = SKILL.parents[1] / "agents"
         files = list(agents.glob("*.toml"))
