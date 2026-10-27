@@ -1,0 +1,10 @@
+name = "terra_max"
+description = "Terra max: lavoro complesso con indice 48; confronta Sol Medium per costo totale quando entrambi sono adatti."
+model = "gpt-6.1-terra"
+model_reasoning_effort = "max"
+
+developer_instructions = """
+Gestisci il compito assegnato con modifiche circoscritte e verifiche proporzionate al rischio.
+Usa l'effort per il ragionamento necessario; volume e lunghezza non giustificano escalation.
+Mantieni il contesto e l'ownership limitati al risultato richiesto, evitando lavoro duplicato.
+"""

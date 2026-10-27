@@ -1,89 +1,56 @@
-# Route catalog
+# Route catalog — 27 October 2026
 
-```yaml
-version: 2026-09-25
-benchmark: Artificial Analysis Intelligence Index v4.3.2
-external_lookup: false
-models: [gpt-6-luna, gpt-6.1-sol, gpt-6-astra]
-families: [luna, sol, astra]
+The authoritative numeric data and route baselines are in [routing-data.json](routing-data.json). Model IDs are GPT-6 Luna, GPT-6.1 Terra, and GPT-6.1 Sol. Astra Low/Medium cover exceptionally difficult specialized workflows and optional heavy advisory questions.
 
-# I = Intelligence Index. C = weighted-average USD per Intelligence Index task.
-# These are benchmark API costs, not Codex subscription/allowance charges.
-profiles:
-  luna_low:     {model: gpt-6-luna,  effort: low,    I: 21, C: 0.0045}
-  luna_medium:  {model: gpt-6-luna,  effort: medium, I: 29, C: 0.02}
-  luna_high:    {model: gpt-6-luna,  effort: high,   I: 32, C: 0.03}
-  luna_xhigh:   {model: gpt-6-luna,  effort: xhigh,  I: 34, C: 0.04}
-  luna_max:     {model: gpt-6-luna,  effort: max,    I: 37, C: 0.07}
-  sol_low:      {model: gpt-6.1-sol, effort: low,    I: 34, C: 0.13}
-  sol_medium:   {model: gpt-6.1-sol, effort: medium, I: 40, C: 0.25}
-  sol_high:     {model: gpt-6.1-sol, effort: high,   I: 43, C: 0.37}
-  sol_xhigh:    {model: gpt-6.1-sol, effort: xhigh,  I: 44, C: 0.53}
-  sol_max:      {model: gpt-6.1-sol, effort: max,    I: 48, C: 1.06}
-  astra_low:    {model: gpt-6-astra, effort: low,    I: 46, C: 0.82}
-  astra_medium: {model: gpt-6-astra, effort: medium, I: 50, C: 1.54}
-  astra_high:   {model: gpt-6-astra, effort: high,   I: 51, C: 1.73}
-  astra_xhigh:  {model: gpt-6-astra, effort: xhigh,  I: 52, C: 2.31}
-  astra_max:    {model: gpt-6-astra, effort: max,    I: 53, C: 3.26}
+The user reports Luna as free and Terra's same-usage tariff as half Sol's. Use free Luna when it meets both scope and capability. For paid profiles, use benchmark task costs as a comparison proxy for total work: tariff alone does not account for token volume. Do not present these USD values as Codex credits or a measured account bill.
 
-# Ultra has no separate benchmark score or cost. It is never an implicit route.
-ultra: {luna: explicit_only, sol: explicit_only, astra: explicit_only}
+| Effort | Luna I / benchmark USD | Terra I / benchmark USD | Sol I / benchmark USD |
+|---|---:|---:|---:|
+| Low | 22 / 0.0045 | 36 / 0.05 | 42 / 0.13 |
+| Medium | 30 / 0.02 | 41 / 0.10 | 48 / 0.21 |
+| High | 33 / 0.03 | 44 / 0.13 | 50 / 0.32 |
+| XHigh | 35 / 0.04 | 45 / 0.19 | 51 / 0.39 |
+| Max | 38 / 0.07 | 48 / 0.40 | 52 / 0.72 |
 
-route_table:
-  luna: {mechanical: luna_low, simple: luna_medium, checked: luna_high, hard_bounded: luna_xhigh, demanding_bounded: luna_max, default: luna_max}
-  sol: {small_judgment: sol_low, normal: sol_medium, difficult: sol_high, exceptional: sol_xhigh, indivisible_extreme: sol_max, default: sol_medium}
-  astra: {entry: astra_low, exceptional_depth: astra_medium, default: astra_low}
+I = Artificial Analysis Intelligence Index v4.3.2, transcribed from the user's charts dated 2026-10-27. Rounded plotted values do not establish model-specific strengths on every task. Non-reasoning Luna is outside this profile bundle. Ultra has no separate measured value.
 
-# 2 = natural task fit; 1 = fallback only when natural family cannot meet the
-# capability need and the substitute is compatible; 0 = incompatible.
-fit:
-  luna:  {luna: 2, sol: 1, astra: 0}
-  sol:   {luna: 0, sol: 2, astra: 1}
-  astra: {luna: 0, sol: 1, astra: 2}
+## Fit and selection
 
-gates:
-  luna_ultra: explicit_only
-  sol_max: demonstrated_indivisible_extreme
-  sol_ultra: explicit_only
-  astra_high: explicit_only
-  astra_xhigh: explicit_only
-  astra_max: explicit_only
-  astra_ultra: explicit_only
+1. Honor an explicit profile exactly; stop if it is not exposed. An explicit model/family restricts optimization to that family.
+2. Classify scope as bounded, execution, judgment, or a justified heavy specialized workflow. Bounded means a clear outcome and limited context, not merely a short prompt. A small known-file code edit can be bounded; a small-looking bug requiring repository exploration is execution.
+3. Pick the route-table baseline for that workload/difficulty and keep its Intelligence Index as a floor. An optional higher requirement raises that floor.
+4. Exclude unavailable, incompatible, under-floor, and gated candidates. Astra Low/Medium are implicit only in the heavy specialized or heavy advisor fit; Astra High/XHigh/Max and all Ultra profiles are explicit-only. Sol Max needs evidence of an indivisible extreme task or an explicit request.
+5. Keep the highest eligible fit tier. Luna fits bounded work. Terra and Sol are both natural fits for execution and judgment when their capability suffices. In a justified heavy specialized workflow, Astra has the natural-fit tier and Sol is a fallback. This prevents the aggregate cost/index frontier from erasing a useful specialized Astra fit.
+6. Prefer free candidates, using the lowest sufficient effort. For paid candidates choose the lowest published benchmark task cost, then the lower same-usage tariff, then higher intelligence. Never use a raw intelligence/cost ratio or lower the floor to save cost.
+7. If no profile qualifies, report that no compatible exposed profile meets the requirement; do not silently drop the floor or switch to a specialized Astra fit without a task-specific reason.
 
-routine_ceilings: {luna: max, sol: xhigh, astra: medium}
-astra_entry: low
-astra_escalation: medium_only_when_low_is_insufficient
+The resolver [select_profile.py](../scripts/select_profile.py) implements these rules without network calls. Its default catalog is this skill's JSON file.
 
-selection:
-  baseline: route_table[dominant_family][difficulty]
-  floor: I(baseline)
-  eligible: available AND compatible AND not_gated AND I>=floor
-  rank: [highest_fit_tier, lowest_C, highest_I]
-  constraints:
-    - Keep a natural family when it meets the required capability.
-    - Do not select a higher effort only because the task is long or repetitive.
-    - Do not equate benchmark USD with Codex quota or credits.
-    - Do not infer an Ultra score or price from Max.
-    - Explicit model/profile requests are exact; stop if unavailable.
-  cost_data_source: user_supplied_Artificial_Analysis_charts_2026-09-25
+## Resulting routes
 
-task_name:
-  format: scope_model_effort
-  model_codes: {luna: l, sol: s, astra: a}
-  effort_codes: {low: l, medium: m, high: h, xhigh: xh, max: mx, ultra: u}
-```
+| Typical request | Baseline floor | Selected profile |
+|---|---:|---|
+| Extract fields from fixed records | 22 | `luna_low` |
+| Summarize or rewrite a clear document | 30 | `luna_medium` |
+| Check familiar bounded edge cases | 33 | `luna_high` |
+| Hard deterministic transformation | 35 | `luna_xhigh` |
+| Demanding bounded task / known-file fix | 38 | `luna_max` |
+| Narrow execution requiring repository/tool context | 36 | `terra_low` |
+| Routine implementation | 41 | `terra_medium` |
+| Normal feature, tests, review, or investigation | 44 | `terra_high` |
+| Subtle or risky execution | 45 | `terra_xhigh` |
+| Complex coupled execution | 48 (Terra Max baseline) | `sol_medium` |
+| Consequential architecture or judgment | 48 | `sol_medium` |
+| Difficult tradeoffs or investigation | 50 | `sol_high` |
+| Exceptional ambiguity or high risk | 51 | `sol_xhigh` |
+| Demonstrated indivisible extreme need | 52 | `sol_max` |
+| Exceptionally difficult specialized workflow | 46 | `astra_low` |
+| Same specialized workflow requiring depth beyond Low | 50 | `astra_medium` |
 
-## Standard examples
+Terra Max remains available: use it when explicitly requested or when cheaper compatible Sol profiles are unavailable and the floor is 48. Sol Low is also available explicitly; Terra High normally provides more capability at the same measured task cost. Do not ban profiles merely because they are not on the default frontier.
 
-- "Extract names and dates from 500 identical records." -> `luna_low`.
-- "Summarize this fixed outline with a few checks." -> `luna_medium`.
-- "Verify a bounded transformation with familiar edge cases." -> `luna_high`.
-- "Solve a hard but deterministic task within a small, clear scope." -> `luna_xhigh`.
-- "Handle a demanding but still bounded deterministic task." -> `luna_max`.
-- "Implement a feature across files and run focused tests." -> `sol_medium`.
-- "Investigate a difficult regression with several plausible causes." -> `sol_high`.
-- "Review a high-risk design with subtle cross-system assumptions." -> `sol_xhigh`.
-- "Carry out an exceptional end-to-end workflow requiring capabilities beyond normal Sol routing." -> `astra_low`.
-- "Astra Low is insufficient for this exceptional workflow." -> `astra_medium`.
+Raise effort because of reasoning, ambiguity, risk, coupled context, or verification needs. More text or repeated records alone do not justify escalation.
 
-The benchmark measures a fixed evaluation workload. Use its scores as a capability floor and its costs to compare compatible routes, not as a prediction of the cost of the user's task. Task volume changes batching and elapsed time; complexity, ambiguity, risk, context coupling, and verification needs determine the family and effort.
+## Optional advisory selection
+
+Execution remains the default. Read [advisor-mode.md](advisor-mode.md) when focused attempts have failed to resolve a concrete blocker or the user directly requests a second opinion. Ordinary uncertainty, a GUI task, and initial planning do not trigger advice. Automatic advisor mode requires both observed-stall context and one precise question, and returns a read-only, non-delegating brief. General advice uses Sol Low/Medium, rising only for a concrete need; heavy specialized advice uses Astra Low/Medium. This does not promote the whole task to Astra.
