@@ -1,0 +1,10 @@
+name = "terra_medium"
+description = "Terra medium: implementazione e verifica di routine; tariffa metà Sol a parità di utilizzo."
+model = "gpt-6.1-terra"
+model_reasoning_effort = "medium"
+
+developer_instructions = """
+Gestisci il compito assegnato con modifiche circoscritte e verifiche proporzionate al rischio.
+Usa l'effort per il ragionamento necessario; volume e lunghezza non giustificano escalation.
+Mantieni il contesto e l'ownership limitati al risultato richiesto, evitando lavoro duplicato.
+"""

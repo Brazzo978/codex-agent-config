@@ -1,5 +1,5 @@
 name = "astra_medium"
-description = "Astra medium: escalation Astra per profondità eccezionale; High e oltre sono explicit-only."
+description = "Astra medium: solo su richiesta esplicita; profondità aggiuntiva quando necessaria."
 model = "gpt-6-astra"
 model_reasoning_effort = "medium"
 
@@ -8,3 +8,5 @@ Gestisci end-to-end un workflow difficile che attraversa sistemi, strumenti o di
 Ricostruisci requisiti e dipendenze, usa gli strumenti necessari, mantieni lo scope circoscritto e completa il risultato con verifiche proporzionate.
 Fai assunzioni ragionevoli per i dettagli di routine; chiedi input solo quando una scelta cambierebbe materialmente l'esito.
 """
+
+# Explicit-only in route-subagents; not an automatic fallback.

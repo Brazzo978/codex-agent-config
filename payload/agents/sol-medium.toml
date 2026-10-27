@@ -1,5 +1,5 @@
 name = "sol_medium"
-description = "Sol medium: default Sol; architettura, pianificazione, sintesi, ambiguità moderata."
+description = "Sol medium: indice 48; preferito a Terra Max a parità di fit per minor costo benchmark totale."
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 

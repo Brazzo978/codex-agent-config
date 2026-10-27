@@ -1,5 +1,5 @@
 name = "sol_low"
-description = "Sol low: task piccolo con giudizio/polish; no lavoro meccanico ad alto volume."
+description = "Sol low: richiesta esplicita o fit specifico; Terra High offre più indice allo stesso costo benchmark."
 model = "gpt-6.1-sol"
 model_reasoning_effort = "low"
 

@@ -194,13 +194,13 @@ remove_managed_legacy_file() {
 assert_regular_source "$source_routing"
 find "$source_agents" -type f -name '*.toml' -print | sort > "$tmp_root/agents.list"
 agent_count=$(wc -l < "$tmp_root/agents.list" | tr -d ' ')
-[ "$agent_count" = 18 ] || fail "expected 18 custom-agent profiles, found $agent_count"
+[ "$agent_count" = 24 ] || fail "expected 24 custom-agent profiles, found $agent_count"
 
 find "$source_skill" -type f ! -name '*.pyc' ! -path '*/__pycache__/*' -print | sort > "$tmp_root/skill.list"
 skill_count=$(wc -l < "$tmp_root/skill.list" | tr -d ' ')
 [ "$skill_count" -ge 3 ] || fail "route-subagents skill payload is incomplete"
 
-for name in spark-medium.toml terra-low.toml terra-medium.toml terra-high.toml terra-xhigh.toml terra-max.toml terra-ultra.toml; do
+for name in spark-medium.toml; do
   remove_managed_legacy_file "$codex_home/agents/$name" "agents/$name"
 done
 while IFS= read -r source; do
@@ -330,7 +330,7 @@ if [ "$mode" = check ]; then
     printf '%s\n' "ERROR: check failed for $failures managed item(s)" >&2
     exit 1
   fi
-  printf '%s\n' "CHECK PASSED: 18 agent profiles, route-subagents, and AGENTS.md match $codex_home"
+  printf '%s\n' "CHECK PASSED: 24 agent profiles, route-subagents, and AGENTS.md match $codex_home"
   exit 0
 fi
 
@@ -344,7 +344,7 @@ while IFS= read -r source; do
   cmp -s "$source" "$codex_home/skills/route-subagents/$relative_inside" || fail "final verification failed: skills/route-subagents/$relative_inside"
 done < "$tmp_root/skill.list"
 
-for name in spark-medium.toml terra-low.toml terra-medium.toml terra-high.toml terra-xhigh.toml terra-max.toml terra-ultra.toml; do
+for name in spark-medium.toml; do
   [ ! -e "$codex_home/agents/$name" ] && [ ! -L "$codex_home/agents/$name" ] || fail "final verification failed: obsolete agent profile remains: $name"
 done
 [ ! -e "$legacy_routing_examples" ] && [ ! -L "$legacy_routing_examples" ] || fail "final verification failed: obsolete routing-examples.md remains installed"

@@ -1,4 +1,4 @@
 interface:
   display_name: "Dynamic Subagent Router"
-  short_description: "Route GPT-6 Luna, Sol, and Astra; Qwen is opt-in"
-  default_prompt: "Use $route-subagents to choose a native GPT-6 Luna, Sol, or Astra profile. Use the local OpenCode/Qwen worker only when I explicitly request it by name, then pass the required workspace/files/context and verify the result."
+  short_description: "Route Luna 6, Terra 6.1, and Sol 6.1 by fit and cost"
+  default_prompt: "Use $route-subagents to choose a suitable GPT-6 Luna, GPT-6.1 Terra, or GPT-6.1 Sol profile; prefer free Luna where sufficient and compare total work for paid profiles."

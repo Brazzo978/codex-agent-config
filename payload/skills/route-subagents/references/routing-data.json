@@ -1,0 +1,298 @@
+{
+  "version": "2026-10-27",
+  "benchmark": "Artificial Analysis Intelligence Index v4.3.2",
+  "source": "User-supplied charts dated 2026-10-27",
+  "external_lookup": false,
+  "account_pricing": {
+    "source": "User report dated 2026-10-27",
+    "same_usage_relative_tariff": {
+      "luna": 0,
+      "terra": 1,
+      "sol": 2,
+      "astra": null
+    },
+    "paid_task_cost_signal": "benchmark_cost_usd is an empirical comparison proxy, not a Codex quota forecast; the tariff ratio alone ignores token volume"
+  },
+  "profiles": {
+    "luna_low": {
+      "family": "luna",
+      "model": "gpt-6-luna",
+      "effort": "low",
+      "intelligence_index": 22,
+      "benchmark_cost_usd": 0.0045,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "luna_medium": {
+      "family": "luna",
+      "model": "gpt-6-luna",
+      "effort": "medium",
+      "intelligence_index": 30,
+      "benchmark_cost_usd": 0.02,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "luna_high": {
+      "family": "luna",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "intelligence_index": 33,
+      "benchmark_cost_usd": 0.03,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "luna_xhigh": {
+      "family": "luna",
+      "model": "gpt-6-luna",
+      "effort": "xhigh",
+      "intelligence_index": 35,
+      "benchmark_cost_usd": 0.04,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "luna_max": {
+      "family": "luna",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "intelligence_index": 38,
+      "benchmark_cost_usd": 0.07,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "luna_ultra": {
+      "family": "luna",
+      "model": "gpt-6-luna",
+      "effort": "ultra",
+      "intelligence_index": null,
+      "benchmark_cost_usd": null,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "terra_low": {
+      "family": "terra",
+      "model": "gpt-6.1-terra",
+      "effort": "low",
+      "intelligence_index": 36,
+      "benchmark_cost_usd": 0.05,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "terra_medium": {
+      "family": "terra",
+      "model": "gpt-6.1-terra",
+      "effort": "medium",
+      "intelligence_index": 41,
+      "benchmark_cost_usd": 0.1,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "terra_high": {
+      "family": "terra",
+      "model": "gpt-6.1-terra",
+      "effort": "high",
+      "intelligence_index": 44,
+      "benchmark_cost_usd": 0.13,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "terra_xhigh": {
+      "family": "terra",
+      "model": "gpt-6.1-terra",
+      "effort": "xhigh",
+      "intelligence_index": 45,
+      "benchmark_cost_usd": 0.19,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "terra_max": {
+      "family": "terra",
+      "model": "gpt-6.1-terra",
+      "effort": "max",
+      "intelligence_index": 48,
+      "benchmark_cost_usd": 0.4,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "terra_ultra": {
+      "family": "terra",
+      "model": "gpt-6.1-terra",
+      "effort": "ultra",
+      "intelligence_index": null,
+      "benchmark_cost_usd": null,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "sol_low": {
+      "family": "sol",
+      "model": "gpt-6.1-sol",
+      "effort": "low",
+      "intelligence_index": 42,
+      "benchmark_cost_usd": 0.13,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "sol_medium": {
+      "family": "sol",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "intelligence_index": 48,
+      "benchmark_cost_usd": 0.21,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "sol_high": {
+      "family": "sol",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "intelligence_index": 50,
+      "benchmark_cost_usd": 0.32,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "sol_xhigh": {
+      "family": "sol",
+      "model": "gpt-6.1-sol",
+      "effort": "xhigh",
+      "intelligence_index": 51,
+      "benchmark_cost_usd": 0.39,
+      "explicit_only": false,
+      "requires_indivisible_extreme": false
+    },
+    "sol_max": {
+      "family": "sol",
+      "model": "gpt-6.1-sol",
+      "effort": "max",
+      "intelligence_index": 52,
+      "benchmark_cost_usd": 0.72,
+      "explicit_only": false,
+      "requires_indivisible_extreme": true
+    },
+    "sol_ultra": {
+      "family": "sol",
+      "model": "gpt-6.1-sol",
+      "effort": "ultra",
+      "intelligence_index": null,
+      "benchmark_cost_usd": null,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "astra_low": {
+      "family": "astra",
+      "model": "gpt-6-astra",
+      "effort": "low",
+      "intelligence_index": 46,
+      "benchmark_cost_usd": 0.82,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "astra_medium": {
+      "family": "astra",
+      "model": "gpt-6-astra",
+      "effort": "medium",
+      "intelligence_index": 50,
+      "benchmark_cost_usd": 1.54,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "astra_high": {
+      "family": "astra",
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "intelligence_index": 51,
+      "benchmark_cost_usd": 1.73,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "astra_xhigh": {
+      "family": "astra",
+      "model": "gpt-6-astra",
+      "effort": "xhigh",
+      "intelligence_index": 52,
+      "benchmark_cost_usd": 2.31,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "astra_max": {
+      "family": "astra",
+      "model": "gpt-6-astra",
+      "effort": "max",
+      "intelligence_index": 53,
+      "benchmark_cost_usd": 3.26,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    },
+    "astra_ultra": {
+      "family": "astra",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "intelligence_index": null,
+      "benchmark_cost_usd": null,
+      "explicit_only": true,
+      "requires_indivisible_extreme": false
+    }
+  },
+  "routes": {
+    "bounded": {
+      "mechanical": "luna_low",
+      "simple": "luna_medium",
+      "checked": "luna_high",
+      "hard": "luna_xhigh",
+      "demanding": "luna_max",
+      "default": "luna_max"
+    },
+    "execution": {
+      "narrow": "terra_low",
+      "routine": "terra_medium",
+      "normal": "terra_high",
+      "subtle": "terra_xhigh",
+      "complex": "terra_max",
+      "default": "terra_high"
+    },
+    "judgment": {
+      "moderate": "terra_high",
+      "normal": "sol_medium",
+      "difficult": "sol_high",
+      "exceptional": "sol_xhigh",
+      "extreme": "sol_max",
+      "default": "sol_medium"
+    }
+  },
+  "fit": {
+    "bounded": {
+      "luna": 2,
+      "terra": 2,
+      "sol": 2,
+      "astra": 0
+    },
+    "execution": {
+      "luna": 0,
+      "terra": 2,
+      "sol": 2,
+      "astra": 0
+    },
+    "judgment": {
+      "luna": 0,
+      "terra": 2,
+      "sol": 2,
+      "astra": 0
+    }
+  },
+  "selection_order": [
+    "exact explicit request",
+    "availability, compatibility, gates, capability floor",
+    "highest fit tier",
+    "free family first",
+    "lowest paid benchmark task cost",
+    "lower same-usage tariff",
+    "lowest sufficient effort for free profiles; intelligence breaks paid cost ties"
+  ],
+  "effort_order": [
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max",
+    "ultra"
+  ],
+  "expected_agent_count": 24
+}

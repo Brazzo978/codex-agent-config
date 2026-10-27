@@ -1,5 +1,5 @@
 name = "astra_low"
-description = "Astra low: primo livello Astra per workflow end-to-end eccezionali; escalation solo se necessaria."
+description = "Astra low: solo su richiesta esplicita; usa il minimo effort adatto entro la richiesta."
 model = "gpt-6-astra"
 model_reasoning_effort = "low"
 
@@ -8,3 +8,5 @@ Gestisci end-to-end un workflow estremamente difficile che richiede capacità ol
 Mantieni requisiti, dipendenze, strumenti e verifiche sotto controllo senza aumentare l'effort per semplice lunghezza o volume.
 Escala a Medium solo quando Low non offre profondità sufficiente; sopra Medium serve una richiesta esplicita dell'utente.
 """
+
+# Explicit-only in route-subagents; not an automatic fallback.

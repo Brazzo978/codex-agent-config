@@ -2,7 +2,7 @@
 
 Private, portable configuration for the Codex desktop app and CLI. It installs:
 
-- 18 custom-agent profiles: GPT-6 Luna, Sol, and Astra across six effort levels;
+- 24 custom-agent profiles: GPT-6 Luna, GPT-6.1 Terra, GPT-6.1 Sol, and explicit-only GPT-6 Astra across six effort levels;
 - the `route-subagents` personal skill with task-fit, cost-performance, quota, escalation, and fallback rules;
 - an optional OpenCode/Qwen worker that can run either through local OpenCode + Ollama or through persistent remote LlamaCode/OpenCode sessions over SSH;
 - a managed routing block in the user's global `AGENTS.md`.
@@ -103,9 +103,19 @@ Restart the Codex desktop app and start a new task after installation or update.
 
 If an explicitly requested model or effort is unavailable to the current account or runtime, the router stops instead of silently selecting another profile.
 
-The router uses plain-language examples and a dated catalog of user-supplied Artificial Analysis Intelligence Index v4.3.2 results (25 September 2026). It chooses Luna for clear, bounded work, Sol for repository work or consequential judgment, and Astra for the hardest end-to-end workflows. Its baseline route sets the minimum capability; among compatible routes with the best task fit, it selects the lowest published benchmark cost. Benchmark USD values are not Codex quota or credit consumption. Luna Max is available for demanding bounded tasks. Sol Max requires demonstrated need for an indivisible extreme task. Astra starts at Low and rises to Medium only when needed. Luna, Sol, and Astra Ultra and Astra High/XHigh/Max require an explicit user request.
+The router uses the user's Artificial Analysis v4.3.2 charts dated 27 October 2026, with current scores and task costs for GPT-6 Luna, GPT-6.1 Terra, and GPT-6.1 Sol. The account preference is free Luna and a Terra tariff equal to half Sol's for the same usage. Luna covers bounded work, Terra covers normal repository execution, and Sol handles higher capability requirements. The numeric catalog is stored in one JSON file; the bundled resolver preserves capability floors and applies task fit, availability, and explicit-only gates before cost selection.
 
-The installer removes the seven obsolete managed Spark and Terra profile files from older releases after backing them up. It preserves unrelated agent profiles and existing `AGENTS.md` content outside the managed block. Restart Codex and start a new task after installation so the new profile list is discovered.
+For paid candidates the router compares full benchmark task costs as a proxy, because more tokens can offset a lower tariff. For example, Terra Max and Sol Medium both score 48, but the supplied costs are $0.40 and $0.21 per benchmark task, so Sol Medium wins when both fit. Terra High scores 44 at $0.13, ahead of Sol Low's 42 at the same measured cost. These figures are not a Codex quota forecast. All Ultra profiles and all Astra profiles require an explicit request. Sol Max needs a demonstrated indivisible extreme need.
+
+The installer replaces older Luna/Sol/Terra profiles under the same managed filenames with backups, removes the obsolete managed Spark file, and preserves unrelated agents and AGENTS.md content outside the managed block.
+
+Check routing decisions without making model calls:
+
+```sh
+python payload/skills/route-subagents/scripts/select_profile.py --workload execution --difficulty normal
+python payload/skills/route-subagents/scripts/select_profile.py --workload execution --difficulty complex
+python -m unittest discover -s payload/skills/route-subagents/tests -p test_route_catalog.py
+```
 
 ## Ask Codex to install it
 
