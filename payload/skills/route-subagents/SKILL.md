@@ -5,7 +5,7 @@ description: Choose GPT-6 Luna, GPT-6.1 Terra, or GPT-6.1 Sol for subagent work 
 
 # Route Subagents
 
-Honor an explicitly named exposed model/profile and effort exactly. Stop if unavailable; do not substitute. Otherwise route with the user's pricing preference: Luna is free, Terra has half Sol's tariff for the same usage. Keep capability and task fit above cost.
+Honor an explicitly named exposed model/profile and effort exactly. Stop if unavailable; do not substitute. Otherwise compare the supplied nonzero costs: Luna is very inexpensive but not free; Terra's nominal same-usage tariff is half Sol's. Keep capability and task fit above cost.
 
 ## Choose an implicit route
 
@@ -16,7 +16,9 @@ Read [references/model-catalog.md](references/model-catalog.md) for the current 
 - **Heavy specialized workflow:** exceptionally difficult work across systems or disciplines where Astra's task fit matters -> Astra Low; Medium only when Low lacks depth. This is a distinct fit, not a generic expensive fallback.
 - **Judgment:** unresolved architecture, competing causes, consequential decisions, or synthesis requiring more capability -> choose the minimum sufficient capability. Moderate judgment can use Terra High; ordinary consequential judgment starts at Sol Medium, difficult work at High, and exceptional work at XHigh. Sol Max requires a demonstrated indivisible extreme need.
 
-The example or route-table profile establishes a capability floor; retain it during cost optimization. Treat Terra and Sol as equally suitable when either can perform the task. Prefer free Luna whenever its scope and capability suffice. For paid candidates, compare the supplied per-task benchmark costs because a lower tariff can be offset by more tokens. Terra Max and Sol Medium both score 48, but the benchmark task costs are $0.40 and $0.21: choose Sol Medium when both fit. Terra High scores 44 at $0.13 and usually supersedes Sol Low (42 at $0.13). These benchmark USD values are comparison signals, not Codex quota forecasts.
+The example or route-table profile establishes a minimum capability in the current **v5.0 index dated 2026-10-28**. Preserve that floor during optimization and treat Terra/Sol as equally suitable when either can perform the task. Luna has no automatic zero-cost priority.
+
+After fit and the v5.0 capability floor, rank nominal same-usage tariffs first: Luna 0.1, Terra 1, Sol 2. If Terra and Sol both satisfy the task, choose Terra for its half tariff. The supplied **v4.3.2 task costs dated 2026-10-27** are separately labeled historical data and may rank efforts only within equal tariffs; they must not reverse that cross-family preference. If the historical proxy is disabled, use the lowest sufficient effort. New scores remove the old equivalence: Terra Max is 51 and Sol Medium is 46. At a requirement of 51, choose Terra Max; a requirement of 52 needs Sol XHigh. Luna Max remains the cheap bounded choice at floor 28 even though Terra Low's dated benchmark task cost is lower.
 
 Use the bundled resolver when availability, cross-family choices, or gates matter:
 
@@ -26,7 +28,7 @@ python <skill-dir>/scripts/select_profile.py --workload execution --difficulty n
 
 The resolver reads the JSON catalog, preserves the floor, excludes unavailable/gated profiles, and reports the selection reason. `--available` accepts the exposed profile names. `--minimum-index` may raise the floor; it never lowers the baseline. An explicit model request restricts candidates to that model's family; a named profile is exact. Use `--allow-sol-max` only for a demonstrated indivisible extreme need. Do not silently replace a missing exact request.
 
-Astra Low and Medium can be selected implicitly for a justified heavy workflow or a difficult advisor question. Astra High/XHigh/Max and all Luna/Terra/Sol/Astra Ultra profiles require an explicit request and have no inferred benchmark score or cost. An Ultra request does not by itself authorize extra delegation. Task length and repetitive volume change batching, not family or effort.
+Astra Low and Medium can be selected implicitly for a justified heavy workflow or a difficult advisor question. Astra High/XHigh/Max and all Luna/Terra/Sol/Astra Ultra profiles require an explicit request. Ultra has no inferred benchmark score or cost. An Ultra request does not by itself authorize extra delegation. Task length and repetitive volume change batching, not family or effort.
 
 For a native spawn, use `task_name=<scope>_<model_code>_<effort_code>`: models `l/t/s/a`, efforts `l/m/h/xh/mx/u`. Use bounded ownership and keep verification and synthesis in the primary agent.
 

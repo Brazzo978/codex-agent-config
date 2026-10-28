@@ -1,5 +1,5 @@
 name = "sol_medium"
-description = "Sol medium: indice 48; preferito a Terra Max a parità di fit per minor costo benchmark totale."
+description = "Sol medium: indice v5.0 46 per giudizio e advisor; Terra Max 51 non è equivalente."
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 

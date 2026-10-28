@@ -1,24 +1,24 @@
 {
-  "version": "2026-10-27",
-  "benchmark": "Artificial Analysis Intelligence Index v4.3.2",
-  "source": "User-supplied charts dated 2026-10-27",
+  "version": "2026-10-28",
+  "benchmark": "Artificial Analysis Intelligence Index v5.0",
+  "source": "User-supplied Intelligence Index chart dated 2026-10-28 (9 evaluations)",
   "external_lookup": false,
   "account_pricing": {
-    "source": "User report dated 2026-10-27",
+    "source": "User-supplied input/output prices dated 2026-10-27; user corrected the free-Luna assumption on 2026-10-28",
     "same_usage_relative_tariff": {
-      "luna": 0,
+      "luna": 0.1,
       "terra": 1,
       "sol": 2,
       "astra": null
     },
-    "paid_task_cost_signal": "benchmark_cost_usd is an empirical comparison proxy, not a Codex quota forecast; the tariff ratio alone ignores token volume"
+    "paid_task_cost_signal": "Use the supplied nonzero task costs with their own benchmark/date; historical values are a proxy only. Nominal input/output tariff ratios ignore cache mix and token volume and are not Codex credit conversions."
   },
   "profiles": {
     "luna_low": {
       "family": "luna",
       "model": "gpt-6-luna",
       "effort": "low",
-      "intelligence_index": 22,
+      "intelligence_index": 10,
       "benchmark_cost_usd": 0.0045,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -27,7 +27,7 @@
       "family": "luna",
       "model": "gpt-6-luna",
       "effort": "medium",
-      "intelligence_index": 30,
+      "intelligence_index": 18,
       "benchmark_cost_usd": 0.02,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -36,7 +36,7 @@
       "family": "luna",
       "model": "gpt-6-luna",
       "effort": "high",
-      "intelligence_index": 33,
+      "intelligence_index": 21,
       "benchmark_cost_usd": 0.03,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -45,7 +45,7 @@
       "family": "luna",
       "model": "gpt-6-luna",
       "effort": "xhigh",
-      "intelligence_index": 35,
+      "intelligence_index": 23,
       "benchmark_cost_usd": 0.04,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -54,7 +54,7 @@
       "family": "luna",
       "model": "gpt-6-luna",
       "effort": "max",
-      "intelligence_index": 38,
+      "intelligence_index": 28,
       "benchmark_cost_usd": 0.07,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -72,7 +72,7 @@
       "family": "terra",
       "model": "gpt-6.1-terra",
       "effort": "low",
-      "intelligence_index": 36,
+      "intelligence_index": 29,
       "benchmark_cost_usd": 0.05,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -81,7 +81,7 @@
       "family": "terra",
       "model": "gpt-6.1-terra",
       "effort": "medium",
-      "intelligence_index": 41,
+      "intelligence_index": 38,
       "benchmark_cost_usd": 0.1,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -90,7 +90,7 @@
       "family": "terra",
       "model": "gpt-6.1-terra",
       "effort": "high",
-      "intelligence_index": 44,
+      "intelligence_index": 42,
       "benchmark_cost_usd": 0.13,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -108,7 +108,7 @@
       "family": "terra",
       "model": "gpt-6.1-terra",
       "effort": "max",
-      "intelligence_index": 48,
+      "intelligence_index": 51,
       "benchmark_cost_usd": 0.4,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -126,7 +126,7 @@
       "family": "sol",
       "model": "gpt-6.1-sol",
       "effort": "low",
-      "intelligence_index": 42,
+      "intelligence_index": 35,
       "benchmark_cost_usd": 0.13,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -135,7 +135,7 @@
       "family": "sol",
       "model": "gpt-6.1-sol",
       "effort": "medium",
-      "intelligence_index": 48,
+      "intelligence_index": 46,
       "benchmark_cost_usd": 0.21,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -153,7 +153,7 @@
       "family": "sol",
       "model": "gpt-6.1-sol",
       "effort": "xhigh",
-      "intelligence_index": 51,
+      "intelligence_index": 52,
       "benchmark_cost_usd": 0.39,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -162,7 +162,7 @@
       "family": "sol",
       "model": "gpt-6.1-sol",
       "effort": "max",
-      "intelligence_index": 52,
+      "intelligence_index": 55,
       "benchmark_cost_usd": 0.72,
       "explicit_only": false,
       "requires_indivisible_extreme": true
@@ -180,7 +180,7 @@
       "family": "astra",
       "model": "gpt-6-astra",
       "effort": "low",
-      "intelligence_index": 46,
+      "intelligence_index": 43,
       "benchmark_cost_usd": 0.82,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -189,7 +189,7 @@
       "family": "astra",
       "model": "gpt-6-astra",
       "effort": "medium",
-      "intelligence_index": 50,
+      "intelligence_index": 51,
       "benchmark_cost_usd": 1.54,
       "explicit_only": false,
       "requires_indivisible_extreme": false
@@ -198,7 +198,7 @@
       "family": "astra",
       "model": "gpt-6-astra",
       "effort": "high",
-      "intelligence_index": 51,
+      "intelligence_index": 55,
       "benchmark_cost_usd": 1.73,
       "explicit_only": true,
       "requires_indivisible_extreme": false
@@ -207,7 +207,7 @@
       "family": "astra",
       "model": "gpt-6-astra",
       "effort": "xhigh",
-      "intelligence_index": 52,
+      "intelligence_index": 55,
       "benchmark_cost_usd": 2.31,
       "explicit_only": true,
       "requires_indivisible_extreme": false
@@ -216,7 +216,7 @@
       "family": "astra",
       "model": "gpt-6-astra",
       "effort": "max",
-      "intelligence_index": 53,
+      "intelligence_index": 57,
       "benchmark_cost_usd": 3.26,
       "explicit_only": true,
       "requires_indivisible_extreme": false
@@ -314,12 +314,11 @@
   },
   "selection_order": [
     "exact explicit request",
-    "availability, compatibility, gates, capability floor",
+    "availability, compatibility, gates, current-benchmark capability floor",
     "highest fit tier",
-    "free family first",
-    "lowest paid benchmark task cost",
-    "lower same-usage tariff",
-    "lowest sufficient effort for free profiles; intelligence breaks paid cost ties"
+    "lowest nominal same-usage tariff; Terra before Sol when both qualify",
+    "task cost only within equal tariff (historical proxy only when enabled)",
+    "lowest sufficient effort; intelligence breaks remaining ties"
   ],
   "effort_order": [
     "low",
@@ -359,5 +358,23 @@
     "require_observed_stall_for_automatic_consultation": true,
     "explicit_user_can_request_without_stall": true,
     "trigger": "Observed failure or non-convergence after focused work; not every uncertainty, GUI task, planning step, or thought."
+  },
+  "intelligence_snapshot": {
+    "date": "2026-10-28",
+    "benchmark": "Artificial Analysis Intelligence Index v5.0",
+    "evaluations": 9
+  },
+  "task_cost_snapshot": {
+    "date": "2026-10-27",
+    "benchmark": "Artificial Analysis Intelligence Index v4.3.2",
+    "status": "historical_proxy",
+    "source": "User-supplied cost-per-task charts",
+    "caveat": "Historical task costs may rank candidates as a dated proxy; they are not measurements for the v5.0 evaluation mix."
+  },
+  "cost_policy": {
+    "allow_historical_task_cost_proxy": true,
+    "luna_is_free": false,
+    "cross_family_priority": "nominal_same_usage_tariff_after_fit_and_capability",
+    "historical_task_cost_role": "secondary_within_equal_tariff_only"
   }
 }

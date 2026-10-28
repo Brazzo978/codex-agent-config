@@ -10,6 +10,16 @@ from pathlib import Path
 DEFAULT_CATALOG = Path(__file__).resolve().parents[1] / "references" / "routing-data.json"
 
 
+def task_cost_basis(data):
+    """Keep cost provenance separate from the current intelligence benchmark."""
+    snapshot = data.get("task_cost_snapshot", {})
+    if snapshot.get("benchmark") == data["benchmark"]:
+        return "current_benchmark"
+    if snapshot and data.get("cost_policy", {}).get("allow_historical_task_cost_proxy", False):
+        return "historical_proxy"
+    return "unavailable"
+
+
 def resolve(
     data, workload="execution", difficulty="default", minimum_index=None,
     explicit=None, requested_model=None, available=None, allow_sol_max=False,
@@ -79,22 +89,20 @@ def resolve(
     weights = data["account_pricing"]["same_usage_relative_tariff"]
     effort_order = data["effort_order"]
 
+    basis = task_cost_basis(data)
+
     def key(item):
         name, p, _ = item
         weight = weights[p["family"]]
-        if weight == 0:
-            return (0, effort_order.index(p["effort"]), 0, -p["intelligence_index"])
-        cost = p["benchmark_cost_usd"]
-        if cost is None:
-            return (2, float("inf"), weight if weight is not None else float("inf"), -p["intelligence_index"])
-        return (1, cost, weight if weight is not None else float("inf"), -p["intelligence_index"])
+        tariff = weight if weight is not None else float("inf")
+        cost = p["benchmark_cost_usd"] if basis != "unavailable" else None
+        # The user's tariff preference is decisive across equally suitable
+        # qualifying families. Task-cost proxies only rank equal tariffs.
+        task_cost = cost if cost is not None else float("inf")
+        return (tariff, task_cost, effort_order.index(p["effort"]), -p["intelligence_index"])
 
     name, p, _ = min(eligible, key=key)
-    reason = (
-        "Free Luna meets scope and capability; choose the lowest sufficient effort."
-        if weights[p["family"]] == 0
-        else "Lowest published paid benchmark task cost among the highest task-fit profiles at or above the floor."
-    )
+    reason = "Lowest nominal same-usage tariff among the highest-fit profiles meeting the capability floor; task costs are secondary within equal tariffs."
     return result(name, p, data, baseline, floor, reason, mode, consult_reason, stalled_on, advisor_requested)
 
 
@@ -107,10 +115,17 @@ def result(name, profile, data, baseline, floor, reason, mode, consult_reason, s
         "baseline_profile": baseline,
         "minimum_index": floor,
         "intelligence_index": profile["intelligence_index"],
+        "intelligence_benchmark": data["benchmark"],
+        "intelligence_date": data["intelligence_snapshot"]["date"],
         "benchmark_cost_usd": profile["benchmark_cost_usd"],
+        "task_cost_snapshot": data.get("task_cost_snapshot"),
+        "task_cost_basis": task_cost_basis(data),
+        "task_cost_role": "secondary_within_equal_tariff" if baseline is not None else "reference_only",
+        "selection_cost_priority": "nominal same-usage tariff before benchmark task-cost proxies",
+        "task_cost_used_for_selection": baseline is not None and task_cost_basis(data) != "unavailable" and profile["benchmark_cost_usd"] is not None,
         "same_usage_relative_tariff": data["account_pricing"]["same_usage_relative_tariff"][profile["family"]],
         "selection_reason": reason,
-        "cost_caveat": "Benchmark USD is a comparison proxy, not a Codex quota forecast.",
+        "cost_caveat": "Task-cost USD keeps its own benchmark/date. Historical values are routing proxies, not measured v5.0 costs or Codex quota forecasts.",
     }
     if mode == "advisor":
         selected["consult_reason"] = consult_reason.strip()

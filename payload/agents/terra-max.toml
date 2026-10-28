@@ -1,5 +1,5 @@
 name = "terra_max"
-description = "Terra max: lavoro complesso con indice 48; confronta Sol Medium per costo totale quando entrambi sono adatti."
+description = "Terra max: indice v5.0 51; preferiscilo a Sol quando entrambi soddisfano il compito, per la tariffa dimezzata."
 model = "gpt-6.1-terra"
 model_reasoning_effort = "max"
 

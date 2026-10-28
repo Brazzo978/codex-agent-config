@@ -1,56 +1,72 @@
-# Route catalog — 27 October 2026
+# Route catalog — 28 October 2026
 
-The authoritative numeric data and route baselines are in [routing-data.json](routing-data.json). Model IDs are GPT-6 Luna, GPT-6.1 Terra, and GPT-6.1 Sol. Astra Low/Medium cover exceptionally difficult specialized workflows and optional heavy advisory questions.
+The authoritative data is [routing-data.json](routing-data.json). Intelligence now uses the user's **Artificial Analysis Intelligence Index v5.0** chart dated **2026-10-28**, with nine evaluations. The old v4.3.2 scores are superseded, not interchangeable with v5.0 values.
 
-The user reports Luna as free and Terra's same-usage tariff as half Sol's. Use free Luna when it meets both scope and capability. For paid profiles, use benchmark task costs as a comparison proxy for total work: tariff alone does not account for token volume. Do not present these USD values as Codex credits or a measured account bill.
+## Current intelligence
 
-| Effort | Luna I / benchmark USD | Terra I / benchmark USD | Sol I / benchmark USD |
+| Effort | GPT-6 Luna | GPT-6.1 Terra | GPT-6.1 Sol | GPT-6 Astra |
+|---|---:|---:|---:|---:|
+| Low | 10 | 29 | 35 | 43 |
+| Medium | 18 | 38 | 46 | 51 |
+| High | 21 | 42 | 50 | 55 |
+| XHigh | 23 | 45 | 52 | 55 |
+| Max | 28 | 51 | 55 | 57 |
+
+Non-reasoning variants remain outside this bundle. Ultra has no measured score or cost in the supplied charts. Astra Low/Medium are available for justified specialized workflows or advice after a real stall; higher Astra efforts are explicit-only.
+
+## Costs and provenance
+
+Luna is inexpensive, **not free**. The user's cost rule is tariff-first after task fit and required capability: when Terra and Sol both qualify, prefer Terra because its nominal same-usage tariff is half Sol's. Retain Luna's supplied nonzero costs.
+
+The supplied cost-per-task data is from **2026-10-27, benchmark v4.3.2**. Retain it as a dated historical routing proxy while v5.0 task costs are unavailable:
+
+| Effort | Luna historical USD/task | Terra historical USD/task | Sol historical USD/task |
 |---|---:|---:|---:|
-| Low | 22 / 0.0045 | 36 / 0.05 | 42 / 0.13 |
-| Medium | 30 / 0.02 | 41 / 0.10 | 48 / 0.21 |
-| High | 33 / 0.03 | 44 / 0.13 | 50 / 0.32 |
-| XHigh | 35 / 0.04 | 45 / 0.19 | 51 / 0.39 |
-| Max | 38 / 0.07 | 48 / 0.40 | 52 / 0.72 |
+| Low | 0.0045 | 0.05 | 0.13 |
+| Medium | 0.02 | 0.10 | 0.21 |
+| High | 0.03 | 0.13 | 0.32 |
+| XHigh | 0.04 | 0.19 | 0.39 |
+| Max | 0.07 | 0.40 | 0.72 |
 
-I = Artificial Analysis Intelligence Index v4.3.2, transcribed from the user's charts dated 2026-10-27. Rounded plotted values do not establish model-specific strengths on every task. Non-reasoning Luna is outside this profile bundle. Ultra has no separate measured value.
+These are not measured costs for the v5.0 evaluation mix or a Codex quota forecast. The JSON and resolver output carry separate intelligence and task-cost benchmarks/dates. Historical task costs may rank efforts only within equal nominal tariffs when `cost_policy.allow_historical_task_cost_proxy` is enabled. They cannot reverse Terra's priority over an equally suitable qualifying Sol. If disabled, use the nominal tariff and lowest sufficient effort.
+
+The supplied nominal input/output prices imply approximately Luna:Terra:Sol = 0.1:1:2 for the same uncached usage. Cache mix and token volume can change the task total. This ratio is the primary cross-family cost preference after fit/capability, not a conversion to Codex credits.
 
 ## Fit and selection
 
-1. Honor an explicit profile exactly; stop if it is not exposed. An explicit model/family restricts optimization to that family.
-2. Classify scope as bounded, execution, judgment, or a justified heavy specialized workflow. Bounded means a clear outcome and limited context, not merely a short prompt. A small known-file code edit can be bounded; a small-looking bug requiring repository exploration is execution.
-3. Pick the route-table baseline for that workload/difficulty and keep its Intelligence Index as a floor. An optional higher requirement raises that floor.
-4. Exclude unavailable, incompatible, under-floor, and gated candidates. Astra Low/Medium are implicit only in the heavy specialized or heavy advisor fit; Astra High/XHigh/Max and all Ultra profiles are explicit-only. Sol Max needs evidence of an indivisible extreme task or an explicit request.
-5. Keep the highest eligible fit tier. Luna fits bounded work. Terra and Sol are both natural fits for execution and judgment when their capability suffices. In a justified heavy specialized workflow, Astra has the natural-fit tier and Sol is a fallback. This prevents the aggregate cost/index frontier from erasing a useful specialized Astra fit.
-6. Prefer free candidates, using the lowest sufficient effort. For paid candidates choose the lowest published benchmark task cost, then the lower same-usage tariff, then higher intelligence. Never use a raw intelligence/cost ratio or lower the floor to save cost.
-7. If no profile qualifies, report that no compatible exposed profile meets the requirement; do not silently drop the floor or switch to a specialized Astra fit without a task-specific reason.
+1. Honor an explicit profile exactly; stop if unavailable. An explicit model restricts optimization to that family.
+2. Classify the task as bounded, execution, judgment, or a genuinely heavy specialized workflow. Known-file edits may be bounded; a short bug report needing broad repository investigation is execution.
+3. Take the workload/difficulty baseline's **current v5.0** score as the capability floor. Additional requirements may raise it, never lower it.
+4. Exclude unavailable, incompatible, under-floor, and gated profiles. Astra High/XHigh/Max and all Ultra profiles require explicit requests. Sol Max requires a demonstrated indivisible extreme need or an explicit request.
+5. Keep the highest eligible task-fit tier. Terra and Sol can be equally suitable. Astra has a distinct natural fit only for justified exceptionally difficult specialized workflows or heavy advisory blockers.
+6. Choose the lowest nominal same-usage tariff within that fit: Luna 0.1, Terra 1, Sol 2. When Terra and Sol both meet the task requirement, Terra wins. Task costs are secondary only within equal tariffs; use current data or an enabled labeled historical proxy, then sufficient effort. Never divide intelligence by cost.
+7. If none qualifies, report the unmet requirement rather than lowering the floor or activating a specialized Astra fit without a reason.
 
-The resolver [select_profile.py](../scripts/select_profile.py) implements these rules without network calls. Its default catalog is this skill's JSON file.
+The resolver [select_profile.py](../scripts/select_profile.py) makes no network or model calls.
 
-## Resulting routes
+## Routes with the user's tariff priority and v5.0 floors
 
-| Typical request | Baseline floor | Selected profile |
+| Typical request | v5.0 baseline floor | Selected profile |
 |---|---:|---|
-| Extract fields from fixed records | 22 | `luna_low` |
-| Summarize or rewrite a clear document | 30 | `luna_medium` |
-| Check familiar bounded edge cases | 33 | `luna_high` |
-| Hard deterministic transformation | 35 | `luna_xhigh` |
-| Demanding bounded task / known-file fix | 38 | `luna_max` |
-| Narrow execution requiring repository/tool context | 36 | `terra_low` |
-| Routine implementation | 41 | `terra_medium` |
-| Normal feature, tests, review, or investigation | 44 | `terra_high` |
-| Subtle or risky execution | 45 | `terra_xhigh` |
-| Complex coupled execution | 48 (Terra Max baseline) | `sol_medium` |
-| Consequential architecture or judgment | 48 | `sol_medium` |
-| Difficult tradeoffs or investigation | 50 | `sol_high` |
-| Exceptional ambiguity or high risk | 51 | `sol_xhigh` |
-| Demonstrated indivisible extreme need | 52 | `sol_max` |
-| Exceptionally difficult specialized workflow | 46 | `astra_low` |
-| Same specialized workflow requiring depth beyond Low | 50 | `astra_medium` |
+| Mechanical extraction | 10 | `luna_low` |
+| Simple summary or transformation | 18 | `luna_medium` |
+| Familiar bounded checks | 21 | `luna_high` |
+| Hard deterministic bounded work | 23 | `luna_xhigh` |
+| Demanding bounded work (Luna Max baseline) | 28 | `luna_max` |
+| Narrow execution requiring repository context | 29 | `terra_low` |
+| Routine implementation | 38 | `terra_medium` |
+| Normal execution | 42 | `terra_high` |
+| Subtle execution | 45 | `terra_xhigh` |
+| Complex execution (Terra Max baseline) | 51 | `terra_max` |
+| Consequential judgment with equal Terra/Sol fit | 46 | `terra_max` (51) |
+| Difficult judgment with equal Terra/Sol fit | 50 | `terra_max` (51) |
+| Exceptional ambiguity | 52 | `sol_xhigh` |
+| Demonstrated indivisible extreme need | 55 | `sol_max` |
+| Heavy specialized workflow | 43 | `astra_low` |
+| Heavy workflow needing depth beyond Low | 51 | `astra_medium` |
 
-Terra Max remains available: use it when explicitly requested or when cheaper compatible Sol profiles are unavailable and the floor is 48. Sol Low is also available explicitly; Terra High normally provides more capability at the same measured task cost. Do not ban profiles merely because they are not on the default frontier.
+Terra Max (51) and Sol Medium (46) are not equivalent scores. Terra Max can nevertheless meet a task whose minimum is 46 or 50; if both families have equal fit, Terra's lower tariff gives it priority. Sol XHigh (52) is needed when the task requires more than Terra Max can provide, or when the suitable Terra profile is unavailable. Dated task costs such as $0.39 for Sol XHigh versus $0.40 for Terra Max do not override the user's tariff rule. Explicit requests remain exact.
 
-Raise effort because of reasoning, ambiguity, risk, coupled context, or verification needs. More text or repeated records alone do not justify escalation.
+## Optional advisor after a real stall
 
-## Optional advisory selection
-
-Execution remains the default. Read [advisor-mode.md](advisor-mode.md) when focused attempts have failed to resolve a concrete blocker or the user directly requests a second opinion. Ordinary uncertainty, a GUI task, and initial planning do not trigger advice. Automatic advisor mode requires both observed-stall context and one precise question, and returns a read-only, non-delegating brief. General advice uses Sol Low/Medium, rising only for a concrete need; heavy specialized advice uses Astra Low/Medium. This does not promote the whole task to Astra.
+Read [advisor-mode.md](advisor-mode.md) only when focused attempts fail to resolve a concrete blocker or the user directly requests a second opinion. Ordinary uncertainty, a GUI mention, and initial planning do not trigger advice. Automatic advisor mode requires observed-stall context and one precise question, and returns a brief read-only, non-delegating contract. General advice uses Sol Low/Medium, rising only when needed; justified heavy specialized advice uses Astra Low/Medium. Execution and verification stay with the primary.

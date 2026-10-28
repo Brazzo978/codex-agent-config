@@ -1,5 +1,5 @@
 name = "sol_low"
-description = "Sol low: richiesta esplicita o fit specifico; Terra High offre più indice allo stesso costo benchmark."
+description = "Sol low: indice v5.0 35; usa i costi forniti con benchmark e data separati."
 model = "gpt-6.1-sol"
 model_reasoning_effort = "low"
 
